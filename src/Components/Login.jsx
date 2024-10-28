@@ -20,6 +20,9 @@ const Login = () => {
       const { Token, Role } = response.data;
       localStorage.setItem('token', Token);
       localStorage.setItem('role', Role);
+      // For testing purposes
+      // localStorage.setItem("token", "temporaryFakeToken");
+      // localStorage.setItem("Role", "ADMIN");
       console.log(Token, Role);
       if (Role === 'ADMIN') {
         navigate('/admin-dashboard');
@@ -27,6 +30,7 @@ const Login = () => {
         navigate('/employee-dashboard');
       }
     } catch (error) {
+      console.log(error);
       setErrorMessage('Login failed. Please check your credentials.');
     }
   };
