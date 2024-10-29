@@ -13,16 +13,16 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8080/api/user/login', {
-        email, // Changed userName to email
-        password,
-      });
-      const { Token, Role } = response.data;
-      localStorage.setItem('token', Token);
-      localStorage.setItem('role', Role);
+      // const response = await axios.post('http://localhost:8080/api/user/login', {
+      //   email, // Changed userName to email
+      //   password,
+      // });
+      // const { Token, Role } = response.data;
+      // localStorage.setItem('token', Token);
+      // localStorage.setItem('role', Role);
       // For testing purposes
-      // localStorage.setItem("token", "temporaryFakeToken");
-      // localStorage.setItem("Role", "ADMIN");
+      localStorage.setItem("token", "temporaryFakeToken");
+      localStorage.setItem("Role", "ADMIN");
       console.log(Token, Role);
       if (Role === 'ADMIN') {
         navigate('/admin-dashboard');

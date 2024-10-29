@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import AdminDashboard from "./Components/AdminDashboard";
-import EmployeeDashboard from "./Components/EmployeeDashboard";
+import CourseDashboard from "./Components/Dashboard";
 import Login from './Components/Login';
 import ProtectedRoute from "./Components/ProtectedRoute";
 import ViewProfile from './Components/ViewProfile';
@@ -21,23 +20,15 @@ const App = () => {
             <Route path="/" element={<DefaultRoute />} />
             <Route path="/login" element={<Login />} />
             <Route
-              path="/admin-dashboard"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <AdminDashboard />
+                  <CourseDashboard />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/employee-dashboard"
-              element={
-                <ProtectedRoute>
-                  <EmployeeDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/view-profile"
+              path="/profile"
               element={
                 <ProtectedRoute>
                   <ViewProfile />

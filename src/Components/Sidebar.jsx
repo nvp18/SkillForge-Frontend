@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaHome, FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaHome, FaUserCircle, FaSignOutAlt, FaTasks, FaBell } from "react-icons/fa";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -20,7 +20,7 @@ const Sidebar = () => {
     <div
       className={`${
         isCollapsed ? "w-16" : "w-64"
-      } bg-gray-800 text-white h-screen p-4 transition-width duration-300 fixed flex flex-col justify-between`}
+      } bg-[#333333] text-white h-screen p-4 transition-width duration-300 fixed flex flex-col justify-between`}
     >
       <div>
         {/* Toggle Button */}
@@ -39,21 +39,44 @@ const Sidebar = () => {
             {/* Home Button */}
             <li>
               <Link
-                to="/employee-dashboard"
-                className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"
+                to="/dashboard"
+                className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
               >
                 <FaHome size={24} />
-                {!isCollapsed && <span>Home</span>}
+                {!isCollapsed && <span>Dashboard</span>}
               </Link>
             </li>
+            
             {/* Profile Button */}
             <li>
               <Link
-                to="/view-profile"
-                className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"
+                to="/profile"
+                className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
               >
                 <FaUserCircle size={24} />
                 {!isCollapsed && <span>Profile</span>}
+              </Link>
+            </li>
+            
+            {/* Projects Button */}
+            <li>
+              <Link
+                to="/assignments"
+                className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
+              >
+                <FaTasks size={24} />
+                {!isCollapsed && <span>Assignments</span>}
+              </Link>
+            </li>
+            
+            {/* Notifications Button */}
+            <li>
+              <Link
+                to="/notifications"
+                className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
+              >
+                <FaBell size={24} />
+                {!isCollapsed && <span>Notifications</span>}
               </Link>
             </li>
           </ul>
@@ -64,7 +87,7 @@ const Sidebar = () => {
       <div>
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full text-left"
+          className="flex items-center space-x-2 hover:bg-[#D9534F] p-2 rounded w-full text-left transition duration-300"
         >
           <FaSignOutAlt size={24} />
           {!isCollapsed && <span>Logout</span>}
