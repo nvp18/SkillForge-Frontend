@@ -26,7 +26,7 @@ const Login = () => {
       console.log(Token, Role);
 
       if (Role === 'ADMIN') {
-        navigate('/admin-dashboard');
+        navigate('/admin/dashboard');
       } else if (Role === 'EMPLOYEE') {
         navigate('/employee-dashboard');
       }

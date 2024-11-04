@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateCourse = () => {
     const [courseName, setCourseName] = useState("");
@@ -8,6 +9,8 @@ const CreateCourse = () => {
     const [successModalOpen, setSuccessModalOpen] = useState(false);
     const [errorModalOpen, setErrorModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,6 +61,9 @@ const CreateCourse = () => {
   const closeModals = () => {
     setSuccessModalOpen(false);
     setErrorModalOpen(false);
+    if (successModalOpen) {
+      navigate("/admin/dashboard"); // Redirect after successful course creation
+    }
   };
 
   return (

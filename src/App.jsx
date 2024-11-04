@@ -5,7 +5,14 @@ import CreateUser from "./Components/Admin/CreateUser";
 import Dashboard from "./Components/Admin/Dashboard";
 import ViewProfile from './Components/Admin/ViewProfile';
 import Login from './Components/Auth/Login';
-import CoursePage from './Components/Course/CoursePage'; // Import CoursePage
+import { CourseProvider } from "./Components/Course/CourseContext"; // Import CourseProvider if using context
+import CoursePage from './Components/Course/CoursePage';
+import DeleteCourse from "./Components/Course/DeleteCourse";
+import EditCourse from "./Components/Course/EditCourse";
+import DeleteModule from "./Components/Course/Modules/DeleteModule";
+import GetModules from "./Components/Course/Modules/GetModules";
+import UpdateModule from "./Components/Course/Modules/UpdateModule";
+import UploadModule from "./Components/Course/Modules/UploadModules";
 import DefaultRoute from "./Components/Shared/DefaultRoute";
 import ProtectedRoute from "./Components/Shared/ProtectedRoute";
 import Sidebar from "./Components/Shared/Sidebar";
@@ -21,7 +28,6 @@ const AppContent = () => {
     <div className="flex">
       {/* Conditionally render Sidebar only on specific logged-in routes */}
       {showSidebar && <Sidebar />}
-
 
       {/* Main content area adjusted based on the presence of sidebars */}
       <div className={`flex-1 ${showSidebar ? 'ml-16 md:ml-64' : ''} p-6 transition-margin duration-300`}>
@@ -70,12 +76,23 @@ const AppContent = () => {
             }
           />
 
-          {/* Protected Course Page Route */}
+          {/* Grouped Course Page Routes under CourseProvider */}
           <Route
             path="/course/:courseId/*"
             element={
               <ProtectedRoute>
-                <CoursePage />
+                <CourseProvider>
+                  <Routes>
+                    <Route index element={<CoursePage />} />
+                    <Route path="home" element = {<CoursePage/>}/>
+                    <Route path="delete" element={<DeleteCourse />} />
+                    <Route path="edit" element={<EditCourse />} />
+                    <Route path="getModules" element={<GetModules />} />
+                    <Route path="uploadModule" element={<UploadModule/>}/>
+                    <Route path="deleteModule/:moduleId" element={<DeleteModule/>}/>
+                    <Route path="updateModule/:moduleId" element={<UpdateModule/>}/>
+                  </Routes>
+                </CourseProvider>
               </ProtectedRoute>
             }
           />

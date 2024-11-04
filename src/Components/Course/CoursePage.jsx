@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useCourse } from "./CourseContext";
 import CourseSidebar from "./CourseSidebar";
 
 const CoursePage = () => {
   const { courseId } = useParams();
-  const [courseDetails, setCourseDetails] = useState(null);
+  const { courseDetails, setCourseDetails } = useCourse(); // Use course context directly
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -20,19 +21,20 @@ const CoursePage = () => {
         });
         if (!response.ok) throw new Error("Failed to fetch course details");
         const data = await response.json();
-        setCourseDetails(data);
+        setCourseDetails(data); // Update the context value directly
+        
       } catch (err) {
         setError(err.message);
       }
     };
 
     fetchCourseDetails();
-  }, [courseId]);
+  }, [courseId, setCourseDetails]);
 
   if (error) return <p className="text-red-500">Error: {error}</p>;
   if (!courseDetails) return <p>Loading...</p>;
 
-  const { courseName, courseDescription, courseTags, createdAt, updatedAt, daysToFinish} = courseDetails;
+  const { courseName, courseDescription, courseTags, createdAt, updatedAt, daysToFinish } = courseDetails;
 
   return (
     <div className="flex-1">

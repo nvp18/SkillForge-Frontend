@@ -18,7 +18,7 @@ const CourseSidebar = ({ courseId }) => {
             </li>
             <li>
               <Link
-                to={`/course/${courseId}/modules`}
+                to={`/course/${courseId}/getModules`}
                 className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
               >
                 Modules
