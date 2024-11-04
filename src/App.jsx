@@ -11,6 +11,7 @@ import DeleteCourse from "./Components/Course/DeleteCourse";
 import EditCourse from "./Components/Course/EditCourse";
 import DeleteModule from "./Components/Course/Modules/DeleteModule";
 import GetModules from "./Components/Course/Modules/GetModules";
+import ModuleContent from "./Components/Course/Modules/ModuleContent";
 import UpdateModule from "./Components/Course/Modules/UpdateModule";
 import UploadModule from "./Components/Course/Modules/UploadModules";
 import DefaultRoute from "./Components/Shared/DefaultRoute";
@@ -91,6 +92,7 @@ const AppContent = () => {
                     <Route path="uploadModule" element={<UploadModule/>}/>
                     <Route path="deleteModule/:moduleId" element={<DeleteModule/>}/>
                     <Route path="updateModule/:moduleId" element={<UpdateModule/>}/>
+                    <Route path="moduleContent/:moduleId" element={<ModuleContent/>}/>
                   </Routes>
                 </CourseProvider>
               </ProtectedRoute>

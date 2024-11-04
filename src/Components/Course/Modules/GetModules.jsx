@@ -1,8 +1,9 @@
+// GetModules.jsx
 import React, { useEffect, useState } from "react";
+import { FaFilePdf } from "react-icons/fa"; // Import PDF icon
 import { useNavigate, useParams } from "react-router-dom";
 import { useCourse } from "../CourseContext";
 import CourseSidebar from "../CourseSidebar";
-
 
 const GetModules = () => {
   const { courseId } = useParams();
@@ -23,7 +24,7 @@ const GetModules = () => {
         if (response.ok) {
           const data = await response.json();
           const sortedModules = data.sort((a, b) => a.moduleNumber - b.moduleNumber);
-           setModules(sortedModules);
+          setModules(sortedModules);
         } else {
           throw new Error("Failed to fetch modules.");
         }
@@ -37,14 +38,11 @@ const GetModules = () => {
 
   return (
     <div className="flex">
-      {/* Sidebar */}
       <CourseSidebar courseId={courseId} />
       
-      {/* Main Content */}
       <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-screen">
         {error && <p className="text-red-500">{error}</p>}
 
-        {/* Header with Course Name, Description, and Button */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-[#342056]">{courseDetails?.courseName}</h1>
@@ -63,16 +61,21 @@ const GetModules = () => {
           {modules.map((module) => (
             <div key={module.moduleId} className="bg-white p-4 mb-4 rounded-lg shadow-md">
               <div className="flex justify-between items-center">
-                <div>
+                <div className="flex items-center space-x-2">
                   <h2 className="text-xl font-semibold text-[#342056]">{module.moduleName}</h2>
-                  <p className="text-gray-600">Module {module.moduleNumber}</p>
+                  {/* PDF icon next to module name */}
+                  <FaFilePdf
+                    className="text-red-500 cursor-pointer"
+                    title="Open PDF"
+                    onClick={() => navigate(`/course/${courseId}/moduleContent/${module.moduleId}`)}
+                  />
                 </div>
                 <div className="space-x-2">
                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
-                  onClick={() => navigate(`/course/${courseId}/updateModule/${module.moduleId}`)}
+                    onClick={() => navigate(`/course/${courseId}/updateModule/${module.moduleId}`)}
                   >Update</button>
                   <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded"
-                  onClick={() => navigate(`/course/${courseId}/deleteModule/${module.moduleId}`)}
+                    onClick={() => navigate(`/course/${courseId}/deleteModule/${module.moduleId}`)}
                   >Delete</button>
                 </div>
               </div>
