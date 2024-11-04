@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 const ViewProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -13,9 +13,12 @@ const ViewProfile = () => {
     // Fetch profile data from API
     const fetchProfile = async () => {
       try {
-        const response = await axios.get("/api/user/viewProfile");
+        const response = await axios.get("http://localhost:8080/api/user/viewProfile", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        });
+        
         const data = response.data;
-
+        console.log(data)
         // Ignore password and set the profile state
         setProfile({
           userId: data.userId,

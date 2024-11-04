@@ -1,29 +1,30 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/Logo.svg';
 import './Login.css'; // Ensure your custom styles (if any) are included
-import logo from '../assets/logo.svg';
 
 const Login = () => {
-  const [email, setEmail] = useState(''); // Changed from userName to email
+  const [userName, setuserName] = useState(''); 
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
+  // Function to handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // const response = await axios.post('http://localhost:8080/api/user/login', {
-      //   email, // Changed userName to email
-      //   password,
-      // });
-      // const { Token, Role } = response.data;
-      // localStorage.setItem('token', Token);
-      // localStorage.setItem('role', Role);
-      // For testing purposes
-      localStorage.setItem("token", "temporaryFakeToken");
-      localStorage.setItem("Role", "ADMIN");
+      const response = await axios.post('http://localhost:8080/api/user/login', {
+      userName, 
+      password,
+      });
+
+      console.log(response.data)
+      const { Token, Role } = response.data;
+      localStorage.setItem('token', Token);
+      localStorage.setItem('role', Role);
       console.log(Token, Role);
+
       if (Role === 'ADMIN') {
         navigate('/admin-dashboard');
       } else if (Role === 'EMPLOYEE') {
@@ -55,11 +56,11 @@ const Login = () => {
         {/* Form */}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label className="block mb-1 text-gray-600">Email</label> {/* Changed label */}
+            <label className="block mb-1 text-gray-600">Username</label> 
             <input
-              type="email" // Updated input type
-              value={email}
-              onChange={(e) => setEmail(e.target.value)} // Changed userName to email
+              type="text" 
+              value={userName}
+              onChange={(e) => setuserName(e.target.value)} 
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             />
           </div>

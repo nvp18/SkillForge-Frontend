@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { FaBars, FaBell, FaBook, FaHome, FaSignOutAlt, FaUserCircle, FaUserPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { FaBars, FaHome, FaUserCircle, FaSignOutAlt, FaTasks, FaBell } from "react-icons/fa";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -39,7 +39,7 @@ const Sidebar = () => {
             {/* Home Button */}
             <li>
               <Link
-                to="/dashboard"
+                to="/admin/dashboard"
                 className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
               >
                 <FaHome size={24} />
@@ -50,7 +50,7 @@ const Sidebar = () => {
             {/* Profile Button */}
             <li>
               <Link
-                to="/profile"
+                to="/admin/profile"
                 className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
               >
                 <FaUserCircle size={24} />
@@ -58,25 +58,37 @@ const Sidebar = () => {
               </Link>
             </li>
             
-            {/* Projects Button */}
+            {/* Create a course button */}
             <li>
               <Link
-                to="/assignments"
+                to="/admin/create-course"
                 className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
               >
-                <FaTasks size={24} />
-                {!isCollapsed && <span>Assignments</span>}
+                <FaBook size={24} />
+                {!isCollapsed && <span>Create Course</span>}
               </Link>
             </li>
-            
-            {/* Notifications Button */}
+
+            {/* Add user */}
             <li>
               <Link
-                to="/notifications"
+                to="/admin/create-user"
+                className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
+              >
+                <FaUserPlus size={24} />
+                {!isCollapsed && <span>Create User</span>}
+              </Link>
+            </li>
+
+            
+            {/* Concerns Button */}
+            <li>
+              <Link
+                to="/admin/concerns"
                 className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300"
               >
                 <FaBell size={24} />
-                {!isCollapsed && <span>Notifications</span>}
+                {!isCollapsed && <span>Concerns</span>}
               </Link>
             </li>
           </ul>
