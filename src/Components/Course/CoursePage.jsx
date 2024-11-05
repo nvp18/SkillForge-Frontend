@@ -40,7 +40,7 @@ const CoursePage = () => {
     <div className="flex-1">
       <CourseSidebar courseId={courseId} />
       
-      <div className="ml-64 p-8 space-y-6 bg-gray-50 min-h-screen">
+      <div className="ml-64 p-8 space-y-6 bg-gray-50 min-h-[90vh]">
         <h2 className="text-3xl font-bold text-[#342056]">{courseName}</h2>
         <p className="text-lg text-gray-700">{courseDescription}</p>
         

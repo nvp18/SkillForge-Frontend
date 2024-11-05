@@ -44,7 +44,7 @@ const DeleteCourse = () => {
 
     <> 
     <CourseSidebar/>
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+    <div className="flex flex-col items-center justify-center h-[90vh] bg-gray-50">
       {/* Only show confirmation if confirmDelete is true */}
       {confirmDelete && (
         <div className="bg-white rounded-lg p-8 shadow-lg w-96 text-center">

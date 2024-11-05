@@ -51,7 +51,7 @@ const Dashboard = ({ isAdmin }) => {
         <p className="text-gray-600">Your current courses for the term</p>
       </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {courses.map((course) => (
           <div
             key={course.courseId}
@@ -59,9 +59,12 @@ const Dashboard = ({ isAdmin }) => {
             style={{ backgroundImage: `url(${b3})` }}
             onClick={() => handleCourseClick(course.courseId)}
           >
+            
             <div className="p-10">
-              <h3 className="text-lg font-extrabold truncate text-white">{course.courseName}</h3>
-              <p className="text-base font-bold text-white">{course.courseTags}</p>
+              <h3 className="text-lg font-extrabold truncate" style={{ color: "#FFD700" }}>{course.courseName}</h3>
+              <p className="text-base font-bold" style={{ color: "#FFF59D" }}>
+              {course.courseTags}
+            </p>
             </div>
 
             <div className="p-4 flex justify-between items-center bg-white text-gray-800">

@@ -18,8 +18,6 @@ const ViewProfile = () => {
         });
         
         const data = response.data;
-        console.log(data)
-        // Ignore password and set the profile state
         setProfile({
           userId: data.userId,
           userName: data.userName,
@@ -54,68 +52,66 @@ const ViewProfile = () => {
   // Handle form submission
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // Here you can implement API call to update the data if needed
     setProfile({ ...profile, ...editFormData });
     setIsEditing(false);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-100 py-10">
-      <div className="w-full max-w-5xl bg-white shadow-lg rounded-lg p-8">
-        <div className="flex items-center justify-between pb-6 border-b border-gray-300">
-          <div>
-            <h1 className="text-4xl font-semibold text-gray-800">Profile Information</h1>
-            <p className="text-gray-600 mt-2">
-              Welcome to your profile page. Below is your personal information.
-            </p>
+    <div className="flex flex-col min-h-[90vh]">
+      <div className="flex-grow flex flex-col items-center bg-gray-100 py-10">
+        <div className="w-full max-w-5xl bg-white shadow-lg rounded-lg p-8">
+          <div className="flex items-center justify-between pb-6 border-b border-gray-300">
+            <div>
+              <h1 className="text-4xl font-semibold text-gray-800">Profile Information</h1>
+              <p className="text-gray-600 mt-2">
+                Welcome to your profile page. Below is your personal information.
+              </p>
+            </div>
+            <div>
+              <button
+                onClick={toggleEdit}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-5 rounded-lg"
+              >
+                Edit Profile
+              </button>
+            </div>
           </div>
-          <div>
-            <button
-              onClick={toggleEdit}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-5 rounded-lg"
-            >
-              Edit Profile
-            </button>
-          </div>
+
+          {profile ? (
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-gray-100 p-6 rounded-lg">
+                <h2 className="text-2xl font-semibold text-gray-800">Basic Information</h2>
+                <div className="mt-6 space-y-4">
+                  <p>
+                    <strong className="text-gray-700">User ID:</strong> {profile.userId}
+                  </p>
+                  <p>
+                    <strong className="text-gray-700">User Name:</strong> {profile.userName}
+                  </p>
+                  <p>
+                    <strong className="text-gray-700">First Name:</strong> {profile.firstName}
+                  </p>
+                  <p>
+                    <strong className="text-gray-700">Last Name:</strong> {profile.lastName}
+                  </p>
+                </div>
+              </div>
+              <div className="bg-gray-100 p-6 rounded-lg">
+                <h2 className="text-2xl font-semibold text-gray-800">Contact Information</h2>
+                <div className="mt-6 space-y-4">
+                  <p>
+                    <strong className="text-gray-700">Email:</strong> {profile.email}
+                  </p>
+                  <p>
+                    <strong className="text-gray-700">Role:</strong> {profile.role}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-600 mt-6">Loading profile data...</p>
+          )}
         </div>
-
-        {profile ? (
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Basic Information Section */}
-            <div className="bg-gray-100 p-6 rounded-lg">
-              <h2 className="text-2xl font-semibold text-gray-800">Basic Information</h2>
-              <div className="mt-6 space-y-4">
-                <p>
-                  <strong className="text-gray-700">User ID:</strong> {profile.userId}
-                </p>
-                <p>
-                  <strong className="text-gray-700">User Name:</strong> {profile.userName}
-                </p>
-                <p>
-                  <strong className="text-gray-700">First Name:</strong> {profile.firstName}
-                </p>
-                <p>
-                  <strong className="text-gray-700">Last Name:</strong> {profile.lastName}
-                </p>
-              </div>
-            </div>
-
-            {/* Contact Information Section */}
-            <div className="bg-gray-100 p-6 rounded-lg">
-              <h2 className="text-2xl font-semibold text-gray-800">Contact Information</h2>
-              <div className="mt-6 space-y-4">
-                <p>
-                  <strong className="text-gray-700">Email:</strong> {profile.email}
-                </p>
-                <p>
-                  <strong className="text-gray-700">Role:</strong> {profile.role}
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <p className="text-gray-600 mt-6">Loading profile data...</p>
-        )}
       </div>
 
       {/* Edit Profile Popup Form */}

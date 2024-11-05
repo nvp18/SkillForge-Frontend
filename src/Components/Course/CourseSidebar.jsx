@@ -1,17 +1,29 @@
 import React from "react";
+import { FaBook } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const CourseSidebar = ({ courseId }) => {
+const CourseSidebar = ({ courseId}) => {
   return (
-    <div className="w-60 bg-white text-[#342056] h-screen p-4 fixed flex flex-col justify-between">
+    <div className="w-60 bg-white text-[#342056] min-h-[90vh] p-4 fixed flex flex-col justify-between shadow-lg">
       <div>
+        {/* Sidebar Header with Icon and Course Title */}
+        <div className="flex items-center space-x-3 mb-6 px-2 py-4 bg-[#f5f5f5] rounded-lg hover:bg-slate-300">
+        <FaBook size={24} className="text-[#a0595d]" />
+          <h2 className="text-xl font-bold text-[#261640] truncate">
+            {"Course Menu"}
+          </h2>
+        </div>
+        
+        {/* Divider */}
+        <hr className="border-gray-300 mb-6" />
+
         {/* Menu Items */}
-        <nav className="mt-10">
+        <nav>
           <ul className="space-y-4">
             <li>
               <Link
                 to={`/course/${courseId}/home`}
-                className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
+                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Home
               </Link>
@@ -19,7 +31,7 @@ const CourseSidebar = ({ courseId }) => {
             <li>
               <Link
                 to={`/course/${courseId}/getModules`}
-                className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
+                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Modules
               </Link>
@@ -27,7 +39,7 @@ const CourseSidebar = ({ courseId }) => {
             <li>
               <Link
                 to={`/course/${courseId}/discussions`}
-                className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
+                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Discussions
               </Link>
@@ -35,7 +47,7 @@ const CourseSidebar = ({ courseId }) => {
             <li>
               <Link
                 to={`/course/${courseId}/announcements`}
-                className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
+                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Announcements
               </Link>
@@ -43,7 +55,7 @@ const CourseSidebar = ({ courseId }) => {
             <li>
               <Link
                 to={`/course/${courseId}/edit`}
-                className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
+                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Edit Course
               </Link>
@@ -51,7 +63,7 @@ const CourseSidebar = ({ courseId }) => {
             <li>
               <Link
                 to={`/course/${courseId}/delete`}
-                className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
+                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Delete Course
               </Link>
@@ -59,7 +71,7 @@ const CourseSidebar = ({ courseId }) => {
             <li>
               <Link
                 to={`/course/${courseId}/create-quiz`}
-                className="hover:bg-gray-400 p-2 rounded transition duration-300 block"
+                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Create Quiz
               </Link>

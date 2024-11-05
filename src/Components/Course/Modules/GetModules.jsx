@@ -40,7 +40,7 @@ const GetModules = () => {
     <div className="flex">
       <CourseSidebar courseId={courseId} />
       
-      <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-screen">
+      <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[90vh]">
         {error && <p className="text-red-500">{error}</p>}
 
         <div className="flex items-center justify-between mb-8">
@@ -50,7 +50,7 @@ const GetModules = () => {
           </div>
           <button
             onClick={() => navigate(`/course/${courseId}/uploadModule`)}
-            className="bg-[#74bec1] hover:bg-[#5aa5a8] text-white font-bold py-2 px-4 rounded"
+            className="bg-[#368e8f] hover:bg-[#5aa5a8] text-white font-bold py-2 px-4 rounded"
           >
             Upload Module
           </button>
@@ -71,10 +71,10 @@ const GetModules = () => {
                   />
                 </div>
                 <div className="space-x-2">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
+                  <button className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-1 px-4 rounded"
                     onClick={() => navigate(`/course/${courseId}/updateModule/${module.moduleId}`)}
                   >Update</button>
-                  <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded"
+                  <button className="bg-orange-700 hover:bg-orange-800 text-white font-bold py-1 px-4 rounded"
                     onClick={() => navigate(`/course/${courseId}/deleteModule/${module.moduleId}`)}
                   >Delete</button>
                 </div>
