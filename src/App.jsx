@@ -5,6 +5,11 @@ import CreateUser from "./Components/Admin/CreateUser";
 import Dashboard from "./Components/Admin/Dashboard";
 import ViewProfile from './Components/Admin/ViewProfile';
 import Login from './Components/Auth/Login';
+import AddAnnouncement from "./Components/Course/Announcements/AddAnnouncements";
+import DeleteAnnouncement from "./Components/Course/Announcements/DeleteAnnouncement";
+import EditAnnouncement from "./Components/Course/Announcements/EditAnnouncement";
+import GetAnnouncement from "./Components/Course/Announcements/GetAnnouncement";
+import Announcements from "./Components/Course/Announcements/GetAnnouncements";
 import { CourseProvider } from "./Components/Course/CourseContext"; // Import CourseProvider if using context
 import CoursePage from './Components/Course/CoursePage';
 import DeleteCourse from "./Components/Course/DeleteCourse";
@@ -44,7 +49,8 @@ const AppContent = () => {
             <Route path="/admin/profile" element={<ProtectedRoute><PageContainer><ViewProfile /></PageContainer></ProtectedRoute>} />
             <Route path="/admin/create-user" element={<ProtectedRoute><PageContainer><CreateUser /></PageContainer></ProtectedRoute>} />
             <Route path="/admin/create-course" element={<ProtectedRoute><PageContainer><CreateCourse /></PageContainer></ProtectedRoute>} />
-            <Route path="/course/:courseId/*" element={<ProtectedRoute><CourseProvider><PageContainer><Routes>
+            <Route path="/course/:courseId/*" element={<ProtectedRoute><CourseProvider><PageContainer>
+              <Routes>
               <Route index element={<CoursePage />} />
               <Route path="home" element={<CoursePage />} />
               <Route path="delete" element={<DeleteCourse />} />
@@ -54,7 +60,16 @@ const AppContent = () => {
               <Route path="deleteModule/:moduleId" element={<DeleteModule />} />
               <Route path="updateModule/:moduleId" element={<UpdateModule />} />
               <Route path="moduleContent/:moduleId" element={<ModuleContent />} />
-            </Routes></PageContainer></CourseProvider></ProtectedRoute>} />
+              <Route path="announcements" element={<Announcements />} />
+              <Route path="addAnnouncement" element={<AddAnnouncement />} />
+              <Route path="announcement/:announcementId" element={<GetAnnouncement/>} />
+              <Route path="announcement/:announcementId/deleteAnnouncement/:announcementId" element={<DeleteAnnouncement/>} />
+              <Route path="announcement/:announcementId/editAnnouncement/:announcementId" element={<EditAnnouncement/>} />
+
+
+
+            </Routes>
+            </PageContainer></CourseProvider></ProtectedRoute>} />
           </Routes>
         </div>
       </div>
