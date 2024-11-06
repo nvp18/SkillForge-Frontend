@@ -24,6 +24,7 @@ import Footer from "./Components/Shared/Footer";
 import PageContainer from "./Components/Shared/PageContainer";
 import ProtectedRoute from "./Components/Shared/ProtectedRoute";
 import Sidebar from "./Components/Shared/Sidebar";
+import Quiz from "./Components/Admin/Quiz";
 
 const AppContent = () => {
   const isLoggedIn = localStorage.getItem('token') !== null;
@@ -43,38 +44,36 @@ const AppContent = () => {
         <div className={`flex-1 ${showSidebar ? 'ml-16 md:ml-64' : ''} p-6 transition-margin duration-300 flex flex-col`}>
           <Routes>
             {/* All Routes go here */}
-            <Route path="/" element={<DefaultRoute />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/admin/dashboard" element={<ProtectedRoute><PageContainer><Dashboard /></PageContainer></ProtectedRoute>} />
-            <Route path="/admin/profile" element={<ProtectedRoute><PageContainer><ViewProfile /></PageContainer></ProtectedRoute>} />
-            <Route path="/admin/create-user" element={<ProtectedRoute><PageContainer><CreateUser /></PageContainer></ProtectedRoute>} />
-            <Route path="/admin/create-course" element={<ProtectedRoute><PageContainer><CreateCourse /></PageContainer></ProtectedRoute>} />
-            <Route path="/course/:courseId/*" element={<ProtectedRoute><CourseProvider><PageContainer>
-              <Routes>
-              <Route index element={<CoursePage />} />
-              <Route path="home" element={<CoursePage />} />
-              <Route path="delete" element={<DeleteCourse />} />
-              <Route path="edit" element={<EditCourse />} />
-              <Route path="getModules" element={<GetModules />} />
-              <Route path="uploadModule" element={<UploadModule />} />
-              <Route path="deleteModule/:moduleId" element={<DeleteModule />} />
-              <Route path="updateModule/:moduleId" element={<UpdateModule />} />
-              <Route path="moduleContent/:moduleId" element={<ModuleContent />} />
-              <Route path="announcements" element={<Announcements />} />
-              <Route path="addAnnouncement" element={<AddAnnouncement />} />
-              <Route path="announcement/:announcementId" element={<GetAnnouncement/>} />
-              <Route path="announcement/:announcementId/deleteAnnouncement/:announcementId" element={<DeleteAnnouncement/>} />
-              <Route path="announcement/:announcementId/editAnnouncement/:announcementId" element={<EditAnnouncement/>} />
+                  <Route path="/" element={<DefaultRoute />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/admin/dashboard" element={<ProtectedRoute><PageContainer><Dashboard /></PageContainer></ProtectedRoute>} />
+                  <Route path="/admin/profile" element={<ProtectedRoute><PageContainer><ViewProfile /></PageContainer></ProtectedRoute>} />
+                  <Route path="/admin/create-user" element={<ProtectedRoute><PageContainer><CreateUser /></PageContainer></ProtectedRoute>} />
+                  <Route path="/admin/create-course" element={<ProtectedRoute><PageContainer><CreateCourse /></PageContainer></ProtectedRoute>} />
+                  <Route path="/course/:courseId/*" element={<ProtectedRoute><CourseProvider><PageContainer>
+                    <Routes>
+                    <Route index element={<CoursePage />} />
+                    <Route path="home" element={<CoursePage />} />
+                    <Route path="delete" element={<DeleteCourse />} />
+                    <Route path="edit" element={<EditCourse />} />
+                    <Route path="getModules" element={<GetModules />} />
+                    <Route path="uploadModule" element={<UploadModule />} />
+                    <Route path="deleteModule/:moduleId" element={<DeleteModule />} />
+                    <Route path="updateModule/:moduleId" element={<UpdateModule />} />
+                    <Route path="moduleContent/:moduleId" element={<ModuleContent />} />
+                    <Route path="announcements" element={<Announcements />} />
+                    <Route path="addAnnouncement" element={<AddAnnouncement />} />
+                    <Route path="announcement/:announcementId" element={<GetAnnouncement/>} />
+                    <Route path="announcement/:announcementId/deleteAnnouncement/:announcementId" element={<DeleteAnnouncement/>} />
+                    <Route path="announcement/:announcementId/editAnnouncement/:announcementId" element={<EditAnnouncement/>} />
+                    <Route path="create-quiz" element={<Quiz/>} />
+                  </Routes>
+                  </PageContainer></CourseProvider></ProtectedRoute>} />
+                  </Routes>
+                </div>
+                </div>
 
-
-
-            </Routes>
-            </PageContainer></CourseProvider></ProtectedRoute>} />
-          </Routes>
-        </div>
-      </div>
-
-      {/* Footer remains at the bottom */}
+                {/* Footer remains at the bottom */}
       {showFooter && <Footer />}
     </div>
   );

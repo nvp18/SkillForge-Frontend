@@ -1,19 +1,38 @@
-import React from "react";
-import { FaBook } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaBook, FaBars } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const CourseSidebar = ({ courseId}) => {
+const CourseSidebar = ({ courseId }) => {
+  const [isOpen, setIsOpen] = useState(false); // State to toggle sidebar visibility
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className="w-60 bg-white text-[#342056] min-h-[90vh] p-4 fixed flex flex-col justify-between shadow-lg">
-      <div>
+    <div className="relative md:flex">
+      {/* Toggle button for mobile view */}
+      <button
+        className="md:hidden p-4 text-[#342056]"
+        onClick={toggleSidebar}
+      >
+        <FaBars size={24} />
+      </button>
+
+      {/* Sidebar - positioned relatively within its container */}
+      <div
+        className={`absolute md:relative top-0 left-0 z-10 h-full w-60 bg-white text-[#342056] shadow-lg p-4 transform ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform duration-300 ease-in-out md:translate-x-0 md:flex md:flex-col md:min-h-[90vh]`}
+      >
         {/* Sidebar Header with Icon and Course Title */}
         <div className="flex items-center space-x-3 mb-6 px-2 py-4 bg-[#f5f5f5] rounded-lg hover:bg-slate-300">
-        <FaBook size={24} className="text-[#a0595d]" />
+          <FaBook size={24} className="text-[#a0595d]" />
           <h2 className="text-xl font-bold text-[#261640] truncate">
             {"Course Menu"}
           </h2>
         </div>
-        
+
         {/* Divider */}
         <hr className="border-gray-300 mb-6" />
 
@@ -79,6 +98,14 @@ const CourseSidebar = ({ courseId}) => {
           </ul>
         </nav>
       </div>
+
+      {/* Overlay for mobile sidebar */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 z-0 md:hidden"
+          onClick={toggleSidebar}
+        ></div>
+      )}
     </div>
   );
 };

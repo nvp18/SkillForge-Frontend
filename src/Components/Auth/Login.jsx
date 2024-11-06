@@ -1,12 +1,14 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
 import logo from '../../assets/Logo.svg';
 import './Login.css'; // Ensure your custom styles (if any) are included
 
 const Login = () => {
   const [userName, setuserName] = useState(''); 
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
@@ -15,15 +17,14 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:8080/api/user/login', {
-      userName, 
-      password,
+        userName, 
+        password,
       });
 
-      console.log(response.data)
+      console.log(response.data);
       const { Token, Role } = response.data;
       localStorage.setItem('token', Token);
       localStorage.setItem('role', Role);
-      console.log(Token, Role);
 
       if (Role === 'ADMIN') {
         navigate('/admin/dashboard');
@@ -65,14 +66,23 @@ const Login = () => {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label className="block mb-1 text-gray-600">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'} // Toggle between text and password
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 pr-10" // Add padding for icon
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)} // Toggle show/hide
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Eye icons */}
+              </button>
+            </div>
           </div>
 
           {errorMessage && <p className="text-red-500 text-sm mb-4">{errorMessage}</p>}

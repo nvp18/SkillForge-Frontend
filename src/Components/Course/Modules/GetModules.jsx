@@ -1,14 +1,15 @@
-// GetModules.jsx
 import React, { useEffect, useState } from "react";
-import { FaFilePdf } from "react-icons/fa"; // Import PDF icon
+import { FaFilePdf } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCourse } from "../CourseContext";
 import CourseSidebar from "../CourseSidebar";
+import ModuleContent from './ModuleContent';
 
 const GetModules = () => {
   const { courseId } = useParams();
   const { courseDetails } = useCourse();
   const [modules, setModules] = useState([]);
+  const [selectedModuleIndex, setSelectedModuleIndex] = useState(null); // Index for navigation
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -36,6 +37,41 @@ const GetModules = () => {
     fetchModules();
   }, [courseId]);
 
+  // Function to handle clicking on the module name (opens ModuleContent)
+  const handleModuleClick = (index) => {
+    setSelectedModuleIndex(index);
+  };
+
+  // Function to handle PDF download when clicking the PDF icon
+  const handleDownloadPdf = async (moduleId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:8080/api/course/downloadModulePdf/${moduleId}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Module_${moduleId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        console.error("Failed to download PDF.");
+      }
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
+
+  const closeModuleContent = () => {
+    setSelectedModuleIndex(null);
+  };
+
   return (
     <div className="flex">
       <CourseSidebar courseId={courseId} />
@@ -58,18 +94,23 @@ const GetModules = () => {
 
         {/* Modules List */}
         <div>
-          {modules.map((module) => (
+          {modules.map((module, index) => (
             <div key={module.moduleId} className="bg-white p-4 mb-4 rounded-lg shadow-md">
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
+                <div
+                  onClick={() => handleModuleClick(index)} // Pass the index
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
                   <h2 className="text-xl font-semibold text-[#342056]">{module.moduleName}</h2>
-                  {/* PDF icon next to module name */}
-                  <FaFilePdf
-                    className="text-red-500 cursor-pointer"
-                    title="Open PDF"
-                    onClick={() => navigate(`/course/${courseId}/moduleContent/${module.moduleId}`)}
-                  />
                 </div>
+                <FaFilePdf
+                  className="text-red-500 cursor-pointer"
+                  title="Download PDF"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering module click
+                    handleDownloadPdf(module.moduleId);
+                  }}
+                />
                 <div className="space-x-2">
                   <button className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-1 px-4 rounded"
                     onClick={() => navigate(`/course/${courseId}/updateModule/${module.moduleId}`)}
@@ -83,6 +124,15 @@ const GetModules = () => {
             </div>
           ))}
         </div>
+
+        {/* Module Content */}
+        {selectedModuleIndex !== null && (
+          <ModuleContent
+            moduleContents={modules}
+            initialIndex={selectedModuleIndex}
+            closeViewer={closeModuleContent}
+          />
+        )}
       </div>
     </div>
   );
