@@ -2,19 +2,20 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
 
-const AddAnnouncement = () => {
+const AddDiscussion = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
-  const handlePostAnnouncement = async () => {
+  const handlePostDiscussion = async () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/postAnnouncement/${courseId}`, {
+      const response = await fetch(`http://localhost:8080/api/course/postDiscussion/${courseId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,22 +25,26 @@ const AddAnnouncement = () => {
       });
 
       if (response.ok) {
-        setShowModal(true); // Show success modal on success
+        setModalMessage("Discussion successfully posted.");
+        setShowModal(true);
       } else {
-        throw new Error("Announcement failed to post.");
+        setModalMessage("Failed to post discussion.");
+        setShowModal(true);
       }
     } catch (error) {
-      setError("An error occurred while posting the announcement. Please try again.");
+      setError("An error occurred while posting the discussion.");
+      setModalMessage("Failed to post discussion.");
+      setShowModal(true);
     }
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    navigate(`/course/${courseId}/announcements`);
+    navigate(`/course/${courseId}/discussions`);
   };
 
   const handleCancel = () => {
-    navigate(`/course/${courseId}/announcements`);
+    navigate(`/course/${courseId}/discussions`);
   };
 
   return (
@@ -47,9 +52,9 @@ const AddAnnouncement = () => {
       <CourseSidebar />
       <div className="flex justify-center items-center min-h-[88vh] bg-gray-50 p-6">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Add Announcement</h1>
+          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Add Discussion</h1>
           {error && <p className="text-red-500 mb-4">{error}</p>}
-
+          
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-1">Title</label>
             <textarea
@@ -57,7 +62,7 @@ const AddAnnouncement = () => {
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               rows="2"
-              placeholder="Enter announcement title"
+              placeholder="Enter discussion title"
             />
           </div>
 
@@ -68,13 +73,13 @@ const AddAnnouncement = () => {
               onChange={(e) => setDescription(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               rows="4"
-              placeholder="Enter announcement description"
+              placeholder="Enter discussion description"
             />
           </div>
 
           <div className="flex justify-end space-x-4">
             <button
-              onClick={handlePostAnnouncement}
+              onClick={handlePostDiscussion}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
             >
               Post
@@ -89,14 +94,14 @@ const AddAnnouncement = () => {
         </div>
       </div>
 
-      {/* Success Modal */}
+      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-            <h2 className="text-xl font-bold mb-4 text-green-600">Announcement successfully posted.</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm text-center">
+            <p className="text-lg font-semibold mb-4">{modalMessage}</p>
             <button
               onClick={handleCloseModal}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
             >
               OK
             </button>
@@ -107,4 +112,4 @@ const AddAnnouncement = () => {
   );
 };
 
-export default AddAnnouncement;
+export default AddDiscussion;

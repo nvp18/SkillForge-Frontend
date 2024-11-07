@@ -41,7 +41,7 @@ const CoursePage = () => {
       <CourseSidebar courseId={courseId} />
       
       {/* Main content area with adjusted margin */}
-      <div className="flex-1 ml-60 p-8 space-y-6 bg-gray-50 min-h-[90vh]">
+      <div className="flex-1 ml-60 p-8 space-y-6 bg-gray-50 min-h-[88vh]">
         <h2 className="text-3xl font-bold text-[#342056]">{courseName}</h2>
         <p className="text-lg text-gray-700">{courseDescription}</p>
         

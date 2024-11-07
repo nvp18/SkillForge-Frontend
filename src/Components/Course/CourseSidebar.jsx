@@ -1,30 +1,15 @@
-import React, { useState } from "react";
-import { FaBook, FaBars } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import React from "react";
+import { FaBook } from "react-icons/fa";
+import { Link, useParams } from "react-router-dom"; // Use useParams for fallback
 
 const CourseSidebar = ({ courseId }) => {
-  const [isOpen, setIsOpen] = useState(false); // State to toggle sidebar visibility
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  // Fallback to URL params if courseId is not passed as prop
+  const { courseId: paramCourseId } = useParams();
+  const resolvedCourseId = courseId || paramCourseId;
 
   return (
-    <div className="relative md:flex">
-      {/* Toggle button for mobile view */}
-      <button
-        className="md:hidden p-4 text-[#342056]"
-        onClick={toggleSidebar}
-      >
-        <FaBars size={24} />
-      </button>
-
-      {/* Sidebar - positioned relatively within its container */}
-      <div
-        className={`absolute md:relative top-0 left-0 z-10 h-full w-60 bg-white text-[#342056] shadow-lg p-4 transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out md:translate-x-0 md:flex md:flex-col md:min-h-[90vh]`}
-      >
+    <div className="w-60 bg-white text-[#342056] min-h-[88vh] p-4 fixed flex flex-col justify-between shadow-lg">
+      <div>
         {/* Sidebar Header with Icon and Course Title */}
         <div className="flex items-center space-x-3 mb-6 px-2 py-4 bg-[#f5f5f5] rounded-lg hover:bg-slate-300">
           <FaBook size={24} className="text-[#a0595d]" />
@@ -41,7 +26,7 @@ const CourseSidebar = ({ courseId }) => {
           <ul className="space-y-4">
             <li>
               <Link
-                to={`/course/${courseId}/home`}
+                to={`/course/${resolvedCourseId}/home`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Home
@@ -49,7 +34,7 @@ const CourseSidebar = ({ courseId }) => {
             </li>
             <li>
               <Link
-                to={`/course/${courseId}/getModules`}
+                to={`/course/${resolvedCourseId}/getModules`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Modules
@@ -57,7 +42,7 @@ const CourseSidebar = ({ courseId }) => {
             </li>
             <li>
               <Link
-                to={`/course/${courseId}/discussions`}
+                to={`/course/${resolvedCourseId}/discussions`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Discussions
@@ -65,7 +50,7 @@ const CourseSidebar = ({ courseId }) => {
             </li>
             <li>
               <Link
-                to={`/course/${courseId}/announcements`}
+                to={`/course/${resolvedCourseId}/announcements`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Announcements
@@ -73,7 +58,7 @@ const CourseSidebar = ({ courseId }) => {
             </li>
             <li>
               <Link
-                to={`/course/${courseId}/edit`}
+                to={`/course/${resolvedCourseId}/edit`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Edit Course
@@ -81,7 +66,7 @@ const CourseSidebar = ({ courseId }) => {
             </li>
             <li>
               <Link
-                to={`/course/${courseId}/delete`}
+                to={`/course/${resolvedCourseId}/delete`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Delete Course
@@ -89,7 +74,7 @@ const CourseSidebar = ({ courseId }) => {
             </li>
             <li>
               <Link
-                to={`/course/${courseId}/create-quiz`}
+                to={`/course/${resolvedCourseId}/create-quiz`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
               >
                 Create Quiz
@@ -98,14 +83,6 @@ const CourseSidebar = ({ courseId }) => {
           </ul>
         </nav>
       </div>
-
-      {/* Overlay for mobile sidebar */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black opacity-50 z-0 md:hidden"
-          onClick={toggleSidebar}
-        ></div>
-      )}
     </div>
   );
 };

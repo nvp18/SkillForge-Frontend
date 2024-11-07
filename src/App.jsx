@@ -6,25 +6,27 @@ import Dashboard from "./Components/Admin/Dashboard";
 import ViewProfile from './Components/Admin/ViewProfile';
 import Login from './Components/Auth/Login';
 import AddAnnouncement from "./Components/Course/Announcements/AddAnnouncements";
-import DeleteAnnouncement from "./Components/Course/Announcements/DeleteAnnouncement";
 import EditAnnouncement from "./Components/Course/Announcements/EditAnnouncement";
 import GetAnnouncement from "./Components/Course/Announcements/GetAnnouncement";
 import Announcements from "./Components/Course/Announcements/GetAnnouncements";
 import { CourseProvider } from "./Components/Course/CourseContext"; // Import CourseProvider if using context
 import CoursePage from './Components/Course/CoursePage';
 import DeleteCourse from "./Components/Course/DeleteCourse";
+import AddDiscussion from "./Components/Course/Discussions/AddDiscussion";
+import GetDiscussion from "./Components/Course/Discussions/GetDiscussion";
+import GetDiscussions from "./Components/Course/Discussions/GetDiscussions";
 import EditCourse from "./Components/Course/EditCourse";
 import DeleteModule from "./Components/Course/Modules/DeleteModule";
 import GetModules from "./Components/Course/Modules/GetModules";
 import ModuleContent from "./Components/Course/Modules/ModuleContent";
 import UpdateModule from "./Components/Course/Modules/UpdateModule";
 import UploadModule from "./Components/Course/Modules/UploadModules";
+import Quiz from "./Components/Course/Quizes/Quiz";
 import DefaultRoute from "./Components/Shared/DefaultRoute";
 import Footer from "./Components/Shared/Footer";
 import PageContainer from "./Components/Shared/PageContainer";
 import ProtectedRoute from "./Components/Shared/ProtectedRoute";
 import Sidebar from "./Components/Shared/Sidebar";
-import Quiz from "./Components/Admin/Quiz";
 
 const AppContent = () => {
   const isLoggedIn = localStorage.getItem('token') !== null;
@@ -64,9 +66,14 @@ const AppContent = () => {
                     <Route path="announcements" element={<Announcements />} />
                     <Route path="addAnnouncement" element={<AddAnnouncement />} />
                     <Route path="announcement/:announcementId" element={<GetAnnouncement/>} />
-                    <Route path="announcement/:announcementId/deleteAnnouncement/:announcementId" element={<DeleteAnnouncement/>} />
                     <Route path="announcement/:announcementId/editAnnouncement/:announcementId" element={<EditAnnouncement/>} />
                     <Route path="create-quiz" element={<Quiz/>} />
+                    <Route path="discussions" element={<GetDiscussions/>}/>
+                    <Route path="addDiscussion" element={<AddDiscussion />} />
+                    <Route path="discussion/:discussionId" element={<GetDiscussion />} />
+                
+
+
                   </Routes>
                   </PageContainer></CourseProvider></ProtectedRoute>} />
                   </Routes>

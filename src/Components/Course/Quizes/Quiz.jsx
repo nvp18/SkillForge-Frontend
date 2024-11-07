@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import AddQuiz from './AddQuiz';
-import CourseSidebar from '../Course/CourseSidebar';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import CourseSidebar from '../../Course/CourseSidebar';
+import AddQuiz from './AddQuiz';
 
 const Quiz = () => {
     const { courseId } = useParams(); // Get courseId from URL
@@ -43,7 +43,7 @@ const Quiz = () => {
         <div className="flex">
             <CourseSidebar courseId={courseId} />
             
-            <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[90vh]">
+            <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[88vh]">
                 {error && <p className="text-red-500">{error}</p>}
 
                 <div className="flex items-center justify-between mb-8">
