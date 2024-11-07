@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Document, Page } from 'react-pdf';
 import { pdfjs } from 'react-pdf';
-// import workerSrc from 'pdfjs-dist/build/pdf.worker.min.js';
 
-// pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [pdfBlob, setBlob] = useState(null)
 
   useEffect(() => {
-    const fetchPdf = async () => {
+    const fetchPdfUrl = async () => {
       try {
         setIsLoading(true);
         setError(null);
@@ -27,21 +26,27 @@ const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
         );
 
         if (response.ok) {
-          const blob = await response.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          setSelectedPdfUrl(blobUrl); // Set the PDF Blob URL for rendering
+          console.log(response)
+          //const pdfUrl = "https://skillforgecoursemodules.s3.amazonaws.com/Object%20Oriented%20Programming%20With%20Python/Intro%20to%20OOPS%20in%20python/Understanding_Object_Oriented_Programming_in_Python.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20241107T010712Z&X-Amz-SignedHeaders=host&X-Amz-Expires=36000&X-Amz-Credential=AKIAQKPIMGDML6LRG6OZ%2F20241107%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=68188a684102c095d51cfbc5014bc7d8e07a76a1bc8c6a46ebb5bb019d70f3ab"
+          const pdfUrl = await response.json(); // Assuming the response body contains the URL as a string
+          console.log("setting url")
+          setSelectedPdfUrl(pdfUrl.message);
+          //const blob = await fetch(pdfUrl)
+          //console.log(blob);
+          //const blobData = await blob.blob();
+          //setBlob(blobData)
         } else {
-          throw new Error('Failed to fetch PDF.');
+          throw new Error('Failed to fetch PDF URL.');
         }
       } catch (error) {
         setError(error.message);
-        setSelectedPdfUrl(null); // Reset URL on error
+        setSelectedPdfUrl(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPdf();
+    fetchPdfUrl();
   }, [currentIndex, moduleContents]);
 
   const goToPrevModule = () => {
@@ -73,9 +78,13 @@ const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
           <p className="text-red-500">{error}</p>
         ) : (
           selectedPdfUrl && (
-            <Document file={selectedPdfUrl}>
-              <Page pageNumber={1} />
-            </Document>
+            <iframe
+              src={selectedPdfUrl}
+              title={moduleContents[currentIndex]?.moduleName}
+              width="100%"
+              height="80%"
+              style={{ border: 'none' }}
+          />
           )
         )}
 
