@@ -76,7 +76,7 @@ const GetModules = () => {
     <div className="flex">
       <CourseSidebar courseId={courseId} />
       
-      <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[90vh]">
+      <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[88vh]">
         {error && <p className="text-red-500">{error}</p>}
 
         <div className="flex items-center justify-between mb-8">
