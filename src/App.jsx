@@ -1,8 +1,10 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom";
+import AllUsers from "./Components/Admin/AllUsers";
 import CreateCourse from "./Components/Admin/CreateCourse";
 import CreateUser from "./Components/Admin/CreateUser";
 import Dashboard from "./Components/Admin/Dashboard";
+import ManageCourses from "./Components/Admin/ManageUserCourses";
 import ViewProfile from './Components/Admin/ViewProfile';
 import Login from './Components/Auth/Login';
 import AddAnnouncement from "./Components/Course/Announcements/AddAnnouncements";
@@ -52,6 +54,8 @@ const AppContent = () => {
                   <Route path="/admin/profile" element={<ProtectedRoute><PageContainer><ViewProfile /></PageContainer></ProtectedRoute>} />
                   <Route path="/admin/create-user" element={<ProtectedRoute><PageContainer><CreateUser /></PageContainer></ProtectedRoute>} />
                   <Route path="/admin/create-course" element={<ProtectedRoute><PageContainer><CreateCourse /></PageContainer></ProtectedRoute>} />
+                  <Route path = "/admin/allUsers" element={<ProtectedRoute><AllUsers/> </ProtectedRoute>}/>
+                  <Route path="/users/:userId/manageCourses" element={<ProtectedRoute><ManageCourses/></ProtectedRoute>}/>
                   <Route path="/course/:courseId/*" element={<ProtectedRoute><CourseProvider><PageContainer>
                     <Routes>
                     <Route index element={<CoursePage />} />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaBars, FaBell, FaBook, FaHome, FaSignOutAlt, FaUserCircle, FaUserPlus } from "react-icons/fa";
+import { FaBars, FaBell, FaBook, FaHome, FaSignOutAlt, FaUser, FaUserCircle, FaUserPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
@@ -89,6 +89,16 @@ const Sidebar = () => {
               >
                 <FaBell size={24} />
                 {!isCollapsed && <span>Concerns</span>}
+              </Link>
+            </li>
+
+            <li>
+              <Link
+              
+                to = "/admin/allUsers"
+                className="flex items-center space-x-2 hover:bg-[#F7E8A4] p-2 rounded transition duration-300">
+                <FaUser size={24}/>
+                {!isCollapsed && <span>All Users</span>}
               </Link>
             </li>
           </ul>
