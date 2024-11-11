@@ -55,18 +55,21 @@ const Dashboard = ({ isAdmin }) => {
         {courses.map((course) => (
           <div
             key={course.courseId}
-            className="rounded-lg shadow-lg overflow-hidden bg-cover bg-center cursor-pointer"
+            className="rounded-lg shadow-lg overflow-hidden bg-cover bg-center cursor-pointer flex flex-col justify-between"
             style={{ backgroundImage: `url(${b3})` }}
             onClick={() => handleCourseClick(course.courseId)}
           >
-            
-            <div className="p-10">
-              <h3 className="text-lg font-extrabold truncate" style={{ color: "#FFD700" }}>{course.courseName}</h3>
+            {/* Course Title and Tags */}
+            <div className="p-10 flex-1">
+              <h3 className="text-lg font-extrabold truncate" style={{ color: "#FFD700" }}>
+                {course.courseName}
+              </h3>
               <p className="text-base font-bold" style={{ color: "#FFF59D" }}>
-              {course.courseTags}
-            </p>
+                {course.courseTags}
+              </p>
             </div>
 
+            {/* Info Footer */}
             <div className="p-4 flex justify-between items-center bg-white text-gray-800">
               <div className="flex space-x-3">
                 <span className="flex items-center space-x-1">

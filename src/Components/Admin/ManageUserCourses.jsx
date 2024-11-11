@@ -111,7 +111,7 @@ const ManageCourses = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-[90vh]">
+    <div className="p-8 bg-gray-50 min-h-[80vh]">
       <h1 className="text-3xl font-bold text-[#342056] mb-8">Manage Courses</h1>
       {error && <p className="text-red-500">{error}</p>}
 

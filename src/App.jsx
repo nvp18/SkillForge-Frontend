@@ -4,6 +4,8 @@ import AllUsers from "./Components/Admin/AllUsers";
 import CreateCourse from "./Components/Admin/CreateCourse";
 import CreateUser from "./Components/Admin/CreateUser";
 import Dashboard from "./Components/Admin/Dashboard";
+import GetAllConcerns from "./Components/Admin/GetAllConcerns";
+import GetConcernById from "./Components/Admin/GetConcernById";
 import ManageCourses from "./Components/Admin/ManageUserCourses";
 import ViewProfile from './Components/Admin/ViewProfile';
 import Login from './Components/Auth/Login';
@@ -56,6 +58,8 @@ const AppContent = () => {
                   <Route path="/admin/create-course" element={<ProtectedRoute><PageContainer><CreateCourse /></PageContainer></ProtectedRoute>} />
                   <Route path = "/admin/allUsers" element={<ProtectedRoute><AllUsers/> </ProtectedRoute>}/>
                   <Route path="/users/:userId/manageCourses" element={<ProtectedRoute><ManageCourses/></ProtectedRoute>}/>
+                  <Route path="/admin/concerns" element={<ProtectedRoute><GetAllConcerns/></ProtectedRoute>}/>
+                  <Route path="/admin/concerns/:concernId" element={<ProtectedRoute><GetConcernById/></ProtectedRoute>}/>
                   <Route path="/course/:courseId/*" element={<ProtectedRoute><CourseProvider><PageContainer>
                     <Routes>
                     <Route index element={<CoursePage />} />
