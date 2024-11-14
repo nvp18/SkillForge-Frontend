@@ -111,15 +111,17 @@ const ManageCourses = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-[80vh]">
-      <h1 className="text-3xl font-bold text-[#342056] mb-8">Manage Courses</h1>
+    <div className="p-4 sm:p-8 bg-gray-50 min-h-[90vh]">
+      <h1 className="text-2xl sm:text-3xl font-bold text-[#342056] mb-6 sm:mb-8 text-center sm:text-left">
+        Manage Courses
+      </h1>
       {error && <p className="text-red-500">{error}</p>}
 
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4">Assigned Courses</h2>
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4">Assigned Courses</h2>
         <ul>
           {assignedCourses.map((entry) => (
-            <li key={entry.course.courseId} className="flex justify-between py-2">
+            <li key={entry.course.courseId} className="flex justify-between py-2 text-sm sm:text-base">
               <div>
                 <strong>{entry.course.courseName}</strong> - {entry.status}
               </div>
@@ -129,8 +131,8 @@ const ManageCourses = () => {
         </ul>
       </div>
 
-      <div className="flex mt-8 space-x-6">
-        <div>
+      <div className="flex flex-col sm:flex-row mt-8 space-y-6 sm:space-y-0 sm:space-x-6">
+        <div className="flex-1">
           <h3 className="text-lg font-bold mb-2">Assign a Course</h3>
           <select
             value={selectedAssignCourse}
@@ -146,13 +148,13 @@ const ManageCourses = () => {
           </select>
           <button
             onClick={handleAssignCourse}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto"
           >
             Assign
           </button>
         </div>
 
-        <div>
+        <div className="flex-1">
           <h3 className="text-lg font-bold mb-2">Deassign a Course</h3>
           <select
             value={selectedDeassignCourse}
@@ -168,7 +170,7 @@ const ManageCourses = () => {
           </select>
           <button
             onClick={handleDeassignCourse}
-            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto"
           >
             Deassign
           </button>

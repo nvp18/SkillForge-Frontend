@@ -50,9 +50,9 @@ const AddDiscussion = () => {
   return (
     <>
       <CourseSidebar />
-      <div className="flex justify-center items-center min-h-[88vh] bg-gray-50 p-6">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Add Discussion</h1>
+      <div className="flex flex-1 flex-col items-center justify-center min-h-[88vh] bg-gray-50 p-4 sm:p-6 md:p-8">
+        <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">Add Discussion</h1>
           {error && <p className="text-red-500 mb-4">{error}</p>}
           
           <div className="mb-4">

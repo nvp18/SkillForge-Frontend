@@ -9,15 +9,24 @@ const GetAnnouncement = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [role, setRole] = useState(""); // To track user role
 
   useEffect(() => {
     const fetchAnnouncement = async () => {
       const token = localStorage.getItem("token");
+      const userRole = localStorage.getItem("role"); // Assuming role is stored in localStorage
+      setRole(userRole);
+
+      const apiUrl =
+        userRole === "ADMIN"
+          ? `http://localhost:8080/api/admin/getAnnouncement/${announcementId}`
+          : `http://localhost:8080/api/employee/getAnnouncement/${announcementId}`;
+
       try {
-        const response = await fetch(`http://localhost:8080/api/admin/getAnnouncement/${announcementId}`, {
+        const response = await fetch(apiUrl, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -42,12 +51,15 @@ const GetAnnouncement = () => {
   const handleDelete = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/deleteAnnouncement/${announcementId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/admin/deleteAnnouncement/${announcementId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -77,35 +89,45 @@ const GetAnnouncement = () => {
     <>
       <CourseSidebar />
       <div className="min-h-[88vh] bg-gray-50 flex justify-center items-center p-8 md:ml-64">
-  {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
-  <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-3xl min-h-fit">
-    <h1 className="text-3xl font-bold text-blue-600 mb-4">Title: {announcement.title}</h1>
-    <p className="text-lg text-gray-800 mb-6"><b>Description: </b>{announcement.description}</p>
+        <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-3xl min-h-fit">
+          <h1 className="text-3xl font-bold text-blue-600 mb-4">Title: {announcement.title}</h1>
+          <p className="text-lg text-gray-800 mb-6">
+            <b>Description: </b>
+            {announcement.description}
+          </p>
 
-    <div className="text-gray-500 text-sm mb-6">
-      <p><strong>Created at:</strong> {new Date(announcement.createdat).toLocaleString()}</p>
-      <p><strong>Updated at:</strong> {new Date(announcement.updatedat).toLocaleString()}</p>
-      <p><strong>Created by:</strong> {announcement.createdby}</p>
-    </div>
+          <div className="text-gray-500 text-sm mb-6">
+            <p>
+              <strong>Created at:</strong> {new Date(announcement.createdat).toLocaleString()}
+            </p>
+            <p>
+              <strong>Updated at:</strong> {new Date(announcement.updatedat).toLocaleString()}
+            </p>
+            <p>
+              <strong>Created by:</strong> {announcement.createdby}
+            </p>
+          </div>
 
-    <div className="flex justify-end space-x-4">
-      <button
-        onClick={handleEdit}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-      >
-        Edit
-      </button>
-      <button
-        onClick={handleDelete}
-        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-      >
-        Delete
-      </button>
-    </div>
-  </div>
-</div>
-
+          {role === "ADMIN" && (
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleEdit}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">

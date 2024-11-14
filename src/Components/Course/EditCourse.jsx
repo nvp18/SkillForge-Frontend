@@ -11,7 +11,6 @@ const EditCourse = () => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch the course details on mount
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
@@ -19,7 +18,7 @@ const EditCourse = () => {
         const response = await fetch(`http://localhost:8080/api/course/getCourseDetails/${courseId}`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -52,7 +51,7 @@ const EditCourse = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedCourseData),
       });
@@ -67,100 +66,101 @@ const EditCourse = () => {
     }
   };
 
-  const handleCancel = () =>{
-    navigate(`/course/${courseId}`)
-  }
+  const handleCancel = () => {
+    navigate(`/course/${courseId}`);
+  };
+
   const handleSuccessClose = () => {
     setSuccessModalOpen(false);
     navigate(`/course/${courseId}`);
   };
 
   return (
-    <> 
-    <CourseSidebar courseId={courseId}/>
+    <div className="flex">
+      <CourseSidebar courseId={courseId} />
 
-    <div className="flex items-center justify-center min-h-[88vh] bg-gray-50">
-      <form onSubmit={handleUpdateCourse} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-[#342056]">Edit Course</h2>
-        
-        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+      <div className="flex-1 flex items-center justify-center min-h-[88vh] bg-gray-50 p-4">
+        <form
+          onSubmit={handleUpdateCourse}
+          className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 w-full max-w-lg"
+        >
+          <h2 className="text-2xl font-semibold mb-6 text-center text-[#342056]">Edit Course</h2>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courseDescription">
-            Course Description
-          </label>
-          <textarea
-            id="courseDescription"
-            value={courseDescription}
-            onChange={(e) => setCourseDescription(e.target.value)}
-            required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
+          {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courseTags">
-            Course Tags (comma-separated)
-          </label>
-          <input
-            type="text"
-            id="courseTags"
-            value={courseTags}
-            onChange={(e) => setCourseTags(e.target.value)}
-            required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courseDescription">
+              Course Description
+            </label>
+            <textarea
+              id="courseDescription"
+              value={courseDescription}
+              onChange={(e) => setCourseDescription(e.target.value)}
+              required
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="daysToFinish">
-            Days to Finish
-          </label>
-          <input
-            type="number"
-            id="daysToFinish"
-            value={daysToFinish}
-            onChange={(e) => setDaysToFinish(e.target.value)}
-            required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courseTags">
+              Course Tags (comma-separated)
+            </label>
+            <input
+              type="text"
+              id="courseTags"
+              value={courseTags}
+              onChange={(e) => setCourseTags(e.target.value)}
+              required
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-        <div className="flex items-center justify-evenly">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Update Course
-          </button>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="daysToFinish">
+              Days to Finish
+            </label>
+            <input
+              type="number"
+              id="daysToFinish"
+              value={daysToFinish}
+              onChange={(e) => setDaysToFinish(e.target.value)}
+              required
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-          <button 
-                type="submit"
-                className="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={handleCancel}>
-                Cancel
-          </button>
-        </div>
-      </form>
+          <div className="flex justify-between">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Update Course
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
 
-      {/* Success Modal */}
-      {successModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg">
-            <h2 className="text-lg font-semibold mb-4 text-center text-[#342056]">Course details successfully updated</h2>
-            <div className="flex justify-center">
+        {successModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-sm text-center">
+              <h2 className="text-lg font-semibold mb-4 text-[#342056]">Course details successfully updated</h2>
               <button
                 onClick={handleSuccessClose}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 OK
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
-    </>
   );
 };
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
+import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/Logo.svg';
 import './Login.css'; // Ensure your custom styles (if any) are included
 
@@ -27,9 +27,9 @@ const Login = () => {
       localStorage.setItem('role', Role);
 
       if (Role === 'ADMIN') {
-        navigate('/admin/dashboard');
+        navigate('/dashboard');
       } else if (Role === 'EMPLOYEE') {
-        navigate('/employee-dashboard');
+        navigate('/dashboard');
       }
     } catch (error) {
       console.log(error);

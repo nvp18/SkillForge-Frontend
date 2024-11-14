@@ -12,6 +12,32 @@ const GetDiscussion = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    // Fetch user role from local storage or API
+    const fetchUserRole = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch("http://localhost:8080/api/user/viewProfile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserRole(data.role); // Assuming 'role' is part of the profile response
+        } else {
+          throw new Error("Failed to fetch user role.");
+        }
+      } catch (err) {
+        console.error("Error fetching user role:", err);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
 
   useEffect(() => {
     const fetchDiscussions = async () => {
@@ -20,7 +46,7 @@ const GetDiscussion = () => {
         const response = await fetch(`http://localhost:8080/api/course/getAllDiscussions/${courseId}`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -46,7 +72,7 @@ const GetDiscussion = () => {
       const response = await fetch(`http://localhost:8080/api/course/replyToDiscussion/${discussionId}`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ reply: replyText }),
@@ -85,7 +111,7 @@ const GetDiscussion = () => {
       const response = await fetch(`http://localhost:8080/api/course/deleteDiscussion/${discussionId}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -104,7 +130,7 @@ const GetDiscussion = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalMessage === "Discussion Delete Successfully") {
+    if (modalMessage === "Discussion successfully deleted.") {
       navigate(`/course/${courseId}/discussions`);
     }
   };
@@ -113,17 +139,19 @@ const GetDiscussion = () => {
   if (!discussion) return <p>Loading...</p>;
 
   return (
-    <>
+    <div className="flex">
       <CourseSidebar />
-      <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[90vh]">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-[#342056]">{discussion.title}</h1>
-          <button
-            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
+      <div className="flex-1 ml-16 md:ml-64 p-4 md:p-8 bg-gray-50 min-h-[90vh]">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#342056]">{discussion.title}</h1>
+          {userRole === "ADMIN" && ( // Conditionally render delete button for admin
+            <button
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mt-4 sm:mt-0"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+          )}
         </div>
         <p className="text-lg text-gray-800 mb-6">{discussion.description}</p>
 
@@ -214,7 +242,7 @@ const GetDiscussion = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
