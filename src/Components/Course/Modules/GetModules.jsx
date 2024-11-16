@@ -210,7 +210,7 @@ const GetModules = () => {
   const handleStartCourse = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8080/api/employee/startCourse/e5eae186-a663-4716-a534-5460b7734655", {
+      const response = await fetch(`http://localhost:8080/api/employee/startCourse/${courseId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -230,8 +230,8 @@ const GetModules = () => {
   const handleModuleCompletion = async (moduleId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/employee/updateModuleCompleted/${moduleId}`, {
-        method: "PUT",
+      const response = await fetch(`http://localhost:8080/api/employee/updateModuleCompleted/${moduleId}/${courseId}`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },

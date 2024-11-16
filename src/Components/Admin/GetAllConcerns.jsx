@@ -21,7 +21,7 @@ const GetAllConcerns = () => {
       setRole(userRole);
 
       const apiUrl =
-        userRole === "admin"
+        userRole === "ADMIN"
           ? "http://localhost:8080/api/admin/getAllConcerns"
           : "http://localhost:8080/api/employee/getConcerns";
 
