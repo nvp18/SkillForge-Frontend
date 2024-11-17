@@ -35,6 +35,7 @@ import ViewProfile from './Components/Shared/ViewProfile';
 // Employee Routes
 
 const AppContent = () => {
+  // console.log(process.env.REACT_APP_API_BASE_URL)
   const isLoggedIn = localStorage.getItem('token') !== null;
   const role = localStorage.getItem('role'); // Retrieve role from localStorage
   const location = useLocation();
