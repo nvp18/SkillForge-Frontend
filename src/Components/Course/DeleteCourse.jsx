@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "./CourseSidebar";
+import apiClient from "../../apiClient";
 
 const DeleteCourse = () => {
   const { courseId } = useParams();
@@ -12,23 +13,13 @@ const DeleteCourse = () => {
   const handleDeleteCourse = async () => {
     setConfirmDelete(false); // Hide confirmation section
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/course/deleteCourse/${courseId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        setSuccessModalOpen(true);
-      } else {
-        setError("Failed to delete the course.");
-      }
+      await apiClient.delete(`/api/course/deleteCourse/${courseId}`);
+      setSuccessModalOpen(true); // Show success modal on success
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError(err.response?.data?.message || "Failed to delete the course. Please try again.");
     }
   };
+  
 
   const handleSuccessClose = () => {
     setSuccessModalOpen(false);

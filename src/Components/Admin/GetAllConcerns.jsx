@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../../apiClient";
 
 const GetAllConcerns = () => {
   const [concerns, setConcerns] = useState([]);
@@ -19,63 +20,57 @@ const GetAllConcerns = () => {
       const token = localStorage.getItem("token");
       const userRole = localStorage.getItem("role"); // Assuming role is stored in localStorage
       setRole(userRole);
-
+  
       const apiUrl =
         userRole === "ADMIN"
-          ? "http://localhost:8080/api/admin/getAllConcerns"
-          : "http://localhost:8080/api/employee/getConcerns";
-
+          ? "/api/admin/getAllConcerns"
+          : "/api/employee/getConcerns";
+  
       try {
-        const response = await fetch(apiUrl, {
-          method: "GET",
+        const response = await apiClient.get(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setConcerns(data);
-        } else {
-          throw new Error("Failed to fetch concerns.");
-        }
+  
+        // Axios automatically handles JSON parsing
+        setConcerns(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch concerns.");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchConcerns();
   }, []);
+  
 
   const handleRaiseConcern = async () => {
     const token = localStorage.getItem("token");
+  
     try {
-      const response = await fetch("http://localhost:8080/api/employee/raiseConcern", {
-        method: "POST",
+      // Axios `post` usage: data goes as the second argument, headers as the third
+      const response = await apiClient.post("/api/employee/raiseConcern", concernData, {
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(concernData),
       });
-
-      if (response.ok) {
-        setModalMessage("Concern raised successfully.");
-        setConcernData({ subject: "", description: "" });
-        setShowRaiseConcernModal(false);
-        setConcerns((prev) => [
-          { id: Date.now(), subject: concernData.subject, status: "NOT_READ" },
-          ...prev,
-        ]);
-      } else {
-        throw new Error("Failed to raise concern.");
-      }
+  
+      // Axios resolves automatically for 2xx responses
+      setModalMessage("Concern raised successfully.");
+      setConcernData({ subject: "", description: "" });
+      setShowRaiseConcernModal(false);
+      setConcerns((prev) => [
+        { id: Date.now(), subject: concernData.subject, status: "NOT_READ" },
+        ...prev,
+      ]);
     } catch (err) {
-      setModalMessage(err.message || "Failed to raise concern.");
+      // Handle Axios error
+      setModalMessage(err.response?.data?.message || "Failed to raise concern.");
     }
   };
+  
 
   const closeModal = () => {
     setShowRaiseConcernModal(false);

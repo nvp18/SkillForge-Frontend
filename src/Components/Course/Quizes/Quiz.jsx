@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import CourseSidebar from '../../Course/CourseSidebar';
 import AddQuiz from './AddQuiz';
+import apiClient from '../../../apiClient';
 
 const Quiz = () => {
     const navigate = useNavigate();
@@ -13,21 +13,24 @@ const Quiz = () => {
     const [userRole, setUserRole] = useState(''); // Replace with actual role logic
 
     // Load quiz data for the course
-    const loadQuiz = async () => {
-        const token = localStorage.getItem('token');
-        const role  = localStorage.getItem('role');
-        setUserRole(role);
-        try {
-            const response = await axios.get(`http://localhost:8080/api/course/getQuiz/${courseId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setQuiz(response.data); // Expecting an object { id, title, description }
-            setError(null);
-        } catch (err) {
-            setError('There was an error fetching the quiz.');
-            console.error(err);
-        }
-    };
+const loadQuiz = async () => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+  
+    try {
+      const response = await apiClient.get(`/api/course/getQuiz/${courseId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      setQuiz(response.data); // Expecting an object { id, title, description }
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'There was an error fetching the quiz.');
+      console.error(err);
+    }
+  };
+  
 
     useEffect(() => {
         loadQuiz();
@@ -49,17 +52,20 @@ const Quiz = () => {
 
     const handleDeleteQuiz = async () => {
         const token = localStorage.getItem('token');
+      
         try {
-            await axios.delete(`http://localhost:8080/api/course/deleteQuiz/${quiz.id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setQuiz(null); // Clear quiz after deletion
-            setError(null);
+          await apiClient.delete(`/api/course/deleteQuiz/${quiz.id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+      
+          setQuiz(null); // Clear quiz after deletion
+          setError(null);
         } catch (err) {
-            setError('Failed to delete the quiz. Please try again.');
-            console.error(err);
+          setError(err.response?.data?.message || 'Failed to delete the quiz. Please try again.');
+          console.error(err);
         }
-    };
+      };
+      
 
     return (
         <div className="flex">

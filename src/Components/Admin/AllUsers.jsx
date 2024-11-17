@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../../apiClient";
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
@@ -10,21 +11,16 @@ const AllUsers = () => {
     const fetchUsers = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch("http://localhost:8080/api/user/getAllEmployees", {
-          method: "GET",
+        const response = await apiClient.get("/api/user/getAllEmployees", {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUsers(data);
-        } else {
-          throw new Error("Failed to fetch users.");
-        }
+        // Axios automatically parses JSON and throws on non-2xx status codes
+        setUsers(response.data); // Access the response data directly
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch users.");
       }
     };
 

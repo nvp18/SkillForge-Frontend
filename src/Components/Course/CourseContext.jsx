@@ -1,43 +1,50 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import apiClient from "../../apiClient"; // Adjust the path if necessary
 
+// Create the context
 const CourseContext = createContext();
 
-export const useCourse = () => useContext(CourseContext);
+// Custom hook to use the Course context
+export const useCourse = () => {
+  const context = useContext(CourseContext);
+  if (!context) {
+    throw new Error("useCourse must be used within a CourseProvider");
+  }
+  return context;
+};
 
+// Context provider component
 export const CourseProvider = ({ children }) => {
   const { courseId } = useParams();
   const [courseDetails, setCourseDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
-      if (!courseDetails && courseId) { // Fetch only if details are missing and courseId is available
-        const token = localStorage.getItem("token");
-        try {
-          const response = await fetch(`http://localhost:8080/api/course/getCourseDetails/${courseId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setCourseDetails(data);
-          } else {
-            throw new Error("Failed to fetch course details");
-          }
-        } catch (err) {
-          console.error("Error fetching course details:", err.message);
-        }
+      if (!courseId) {
+        setError("Course ID is required.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`);
+        setCourseDetails(response.data);
+        setError(null); // Clear any previous errors
+      } catch (err) {
+        setError(err.response?.data?.message || "An error occurred while fetching course details.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCourseDetails();
-  }, [courseId, courseDetails]);
+  }, [courseId]);
 
   return (
-    <CourseContext.Provider value={{ courseDetails, setCourseDetails }}>
+    <CourseContext.Provider value={{ courseDetails, setCourseDetails, loading, error }}>
       {children}
     </CourseContext.Provider>
   );

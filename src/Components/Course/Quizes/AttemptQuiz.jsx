@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../../../apiClient';
 
 const AttemptQuiz = () => {
     const { courseId, quizId } = useParams(); // Get both courseId and quizId from URL
@@ -13,21 +13,23 @@ const AttemptQuiz = () => {
 
     useEffect(() => {
         const fetchQuizQuestions = async () => {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await axios.get(`http://localhost:8080/api/course/getQuestions/${quizId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setQuestions(response.data); // Expecting an array of questions
-                setError(null);
-            } catch (err) {
-                setError('Failed to load quiz. Please try again later.');
-                console.error(err);
-            }
+          const token = localStorage.getItem('token');
+          try {
+            const response = await apiClient.get(`/api/course/getQuestions/${quizId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+      
+            setQuestions(response.data); // Expecting an array of questions
+            setError(null);
+          } catch (err) {
+            setError(err.response?.data?.message || 'Failed to load quiz. Please try again later.');
+            console.error(err);
+          }
         };
-
+      
         fetchQuizQuestions();
-    }, [quizId]);
+      }, [quizId]);
+      
 
     const handleAnswer = (questionId, answer) => {
         setAnswers((prev) => [
@@ -37,54 +39,38 @@ const AttemptQuiz = () => {
     };
 
     const handleSubmit = async () => {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            setSubmitStatus('No token found. Please log in again.');
-            console.error('No token available.');
-            return;
+        if (!localStorage.getItem('token')) {
+          setSubmitStatus('No token found. Please log in again.');
+          console.error('No token available.');
+          return;
         }
-
+      
         if (answers.length === 0) {
-            setSubmitStatus('No answers to submit. Please attempt the quiz.');
-            return;
+          setSubmitStatus('No answers to submit. Please attempt the quiz.');
+          return;
         }
-
-        const data = JSON.stringify(answers); // Convert answers to JSON
-
-        const config = {
-            method: 'post',
-            maxBodyLength: Infinity, // Ensure large payloads are supported
-            url: `http://localhost:8080/api/course/submitQuiz/${courseId}`,
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`, // Add token here
-            },
-            data: data,
-        };
-
+      
         try {
-            const response = await axios.request(config); // Use axios.request with config
-            if (response.status === 200) {
-                setSubmitStatus('Quiz submitted successfully!');
-                console.log('Submission response:', response.data);
-            } else {
-                setSubmitStatus(`Submission failed with status: ${response.status}`);
-                console.error('Unexpected response status:', response);
-            }
+          const response = await apiClient.post(`/api/course/submitQuiz/${courseId}`, answers, {
+            maxBodyLength: Infinity, // Ensure large payloads are supported
+          });
+      
+          setSubmitStatus('Quiz submitted successfully!');
+          console.log('Submission response:', response.data);
         } catch (error) {
-            if (error.response) {
-                console.error('Server error response:', error.response);
-                setSubmitStatus(`Failed to submit quiz: ${error.response.data?.message || 'Server error'}`);
-            } else if (error.request) {
-                console.error('No response from server:', error.request);
-                setSubmitStatus('No response from server. Please try again later.');
-            } else {
-                console.error('Error in submission:', error.message);
-                setSubmitStatus(`Submission error: ${error.message}`);
-            }
+          if (error.response) {
+            console.error('Server error response:', error.response);
+            setSubmitStatus(`Failed to submit quiz: ${error.response.data?.message || 'Server error'}`);
+          } else if (error.request) {
+            console.error('No response from server:', error.request);
+            setSubmitStatus('No response from server. Please try again later.');
+          } else {
+            console.error('Error in submission:', error.message);
+            setSubmitStatus(`Submission error: ${error.message}`);
+          }
         }
-    };
+      };
+      
 
     return (
         <div className="p-8 min-h-screen bg-gray-100">

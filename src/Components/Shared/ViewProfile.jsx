@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import apiClient from "../../apiClient";
 
 const SuccessModal = ({ message, onClose }) => {
   return (
@@ -44,9 +45,7 @@ const ViewProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/user/viewProfile", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        const response = await apiClient.get("/api/user/viewProfile");
         const data = response.data;
         setProfile({
           userId: data.userId,
@@ -57,10 +56,10 @@ const ViewProfile = () => {
           role: data.role,
         });
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching profile data:", error.response?.data?.message || error.message);
       }
     };
-
+  
     fetchProfile();
   }, []);
 
@@ -107,31 +106,22 @@ const ViewProfile = () => {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordError(null);
-
+  
     if (passwordFormData.newPassword !== passwordFormData.confirmPassword) {
       setPasswordError("New password and confirm password do not match.");
       return;
     }
-
+  
     try {
-      const response = await axios.put(
-        "http://localhost:8080/api/user/changePassword",
-        passwordFormData,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-
-      if (response.status === 200) {
-        setShowSuccessModal(true); // Show success modal
-        setIsChangingPassword(false);
-      } else {
-        setPasswordError("Failed to change password.");
-      }
+      const response = await apiClient.put("/api/user/changePassword", passwordFormData);
+  
+      setShowSuccessModal(true); // Show success modal
+      setIsChangingPassword(false);
     } catch (error) {
-      setPasswordError("An error occurred while changing the password.");
+      setPasswordError(error.response?.data?.message || "An error occurred while changing the password.");
     }
   };
+  
 
   return (
     <div className="flex flex-col min-h-[90vh] bg-gray-100 px-4">

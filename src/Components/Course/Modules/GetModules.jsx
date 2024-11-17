@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useCourse } from "../CourseContext";
 import CourseSidebar from "../CourseSidebar";
 import ModuleContent from "./ModuleContent";
+import apiClient from "../../../apiClient";
 
 const GetModules = () => {
   const { courseId } = useParams();
@@ -18,126 +19,113 @@ const GetModules = () => {
   useEffect(() => {
     const fetchUserRole = async () => {
       const token = localStorage.getItem("token");
+  
       try {
-        const response = await fetch("http://localhost:8080/api/user/viewProfile", {
+        const response = await apiClient.get("/api/user/viewProfile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (response.ok) {
-          const data = await response.json();
-          setUserRole(data.role);
-        } else {
-          throw new Error("Failed to fetch user role.");
-        }
+  
+        setUserRole(response.data.role);
       } catch (err) {
-        console.error("Error fetching user role:", err);
+        console.error("Error fetching user role:", err.response?.data?.message || err.message);
       }
     };
-
+  
     fetchUserRole();
   }, []);
+  
 
   useEffect(() => {
     const fetchModulesAndStatuses = async () => {
       const token = localStorage.getItem("token");
-
+  
       try {
         // Fetch modules
-        const modulesResponse = await fetch(`http://localhost:8080/api/course/getCourseModules/${courseId}`, {
-          method: "GET",
+        const modulesResponse = await apiClient.get(`/api/course/getCourseModules/${courseId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        if (modulesResponse.ok) {
-          const data = await modulesResponse.json();
-          const sortedModules = data.sort((a, b) => a.moduleNumber - b.moduleNumber);
-          setModules(sortedModules);
-        } else {
-          throw new Error("Failed to fetch modules.");
-        }
-
-        // Fetch module statuses for employees
+  
+        const sortedModules = modulesResponse.data.sort((a, b) => a.moduleNumber - b.moduleNumber);
+        setModules(sortedModules);
+  
+        // Fetch module statuses and course status for employees
         if (userRole === "EMPLOYEE") {
-          const statusResponse = await fetch(`http://localhost:8080/api/employee/getModuleStatus/${courseId}`, {
-            method: "GET",
+          // Fetch module statuses
+          const statusResponse = await apiClient.get(`/api/employee/getModuleStatus/${courseId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-
-          if (statusResponse.ok) {
-            const statusData = await statusResponse.json();
-            const statusMap = statusData.reduce((acc, status) => {
-              acc[status.moduleId] = status.isCompleted;
-              return acc;
-            }, {});
-            setModuleStatuses(statusMap);
-          } else {
-            throw new Error("Failed to fetch module statuses.");
-          }
-
-          // Fetch course status for employees
-          const courseStatusResponse = await fetch(`http://localhost:8080/api/employee/getCourseStatus/${courseId}`, {
-            method: "GET",
+  
+          const statusMap = statusResponse.data.reduce((acc, status) => {
+            acc[status.moduleId] = status.isCompleted;
+            return acc;
+          }, {});
+          setModuleStatuses(statusMap);
+  
+          // Fetch course status
+          const courseStatusResponse = await apiClient.get(`/api/employee/getCourseStatus/${courseId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-
-          if (courseStatusResponse.ok) {
-            const courseStatusData = await courseStatusResponse.json();
-            setCourseStarted(courseStatusData.status === "STARTED");
-          } else {
-            throw new Error("Failed to fetch course status.");
-          }
+  
+          setCourseStarted(courseStatusResponse.data.status === "STARTED");
         }
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "An error occurred while fetching data.");
       }
     };
-
+  
     fetchModulesAndStatuses();
   }, [courseId, userRole]);
+  
 
   const handleStartCourse = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/employee/startCourse/${courseId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        setCourseStarted(true);
-      } else {
-        throw new Error("Failed to start course.");
-      }
+  
+      await apiClient.post(
+        `/api/employee/startCourse/${courseId}`,
+        {}, // Pass an empty object since there's no body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setCourseStarted(true);
     } catch (error) {
-      console.error("Error starting course:", error);
+      console.error("Error starting course:", error.response?.data?.message || error.message);
     }
   };
+  
 
   const handleModuleCompletion = async (moduleId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/employee/updateModuleCompleted/${moduleId}/${courseId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        setModuleStatuses((prevStatuses) => ({
-          ...prevStatuses,
-          [moduleId]: !prevStatuses[moduleId],
-        }));
-      } else {
-        throw new Error("Failed to update module completion.");
-      }
+  
+      await apiClient.post(
+        `/api/employee/updateModuleCompleted/${moduleId}/${courseId}`,
+        {}, // Pass an empty object since there's no body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setModuleStatuses((prevStatuses) => ({
+        ...prevStatuses,
+        [moduleId]: !prevStatuses[moduleId],
+      }));
     } catch (error) {
-      console.error("Error updating module completion:", error);
+      console.error(
+        "Error updating module completion:",
+        error.response?.data?.message || error.message
+      );
     }
   };
+  
 
   const handleModuleClick = (index) => {
     setSelectedModuleIndex(index);

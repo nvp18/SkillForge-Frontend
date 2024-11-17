@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
+import apiClient from "../../../apiClient";
 
 const GetDiscussion = () => {
   const { courseId, discussionId } = useParams();
@@ -19,87 +20,81 @@ const GetDiscussion = () => {
     const fetchUserRole = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch("http://localhost:8080/api/user/viewProfile", {
+        const response = await apiClient.get("/api/user/viewProfile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUserRole(data.role); // Assuming 'role' is part of the profile response
-        } else {
-          throw new Error("Failed to fetch user role.");
-        }
+  
+        // Assuming 'role' is part of the profile response
+        setUserRole(response.data.role);
       } catch (err) {
-        console.error("Error fetching user role:", err);
+        console.error("Error fetching user role:", err.response?.data?.message || err.message);
       }
     };
-
+  
     fetchUserRole();
   }, []);
+  
 
   useEffect(() => {
     const fetchDiscussions = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch(`http://localhost:8080/api/course/getAllDiscussions/${courseId}`, {
-          method: "GET",
+        const response = await apiClient.get(`/api/course/getAllDiscussions/${courseId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          const selectedDiscussion = data.find((d) => d.id === discussionId);
-          setDiscussion(selectedDiscussion);
-        } else {
-          throw new Error("Failed to fetch discussions.");
-        }
+  
+        // Find and set the selected discussion
+        const selectedDiscussion = response.data.find((d) => d.id === discussionId);
+        setDiscussion(selectedDiscussion);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch discussions.");
       }
     };
-
+  
     fetchDiscussions();
   }, [courseId, discussionId]);
+  
 
   const handleReply = async () => {
     const token = localStorage.getItem("token");
     setIsSubmitting(true);
+  
     try {
-      const response = await fetch(`http://localhost:8080/api/course/replyToDiscussion/${discussionId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ reply: replyText }),
-      });
-
-      if (response.ok) {
-        setModalMessage("Reply posted successfully.");
-        setShowModal(true);
-        setReplyText("");
-        setShowReplyBox(false);
-        setDiscussion((prev) => ({
-          ...prev,
-          discussionReplyList: [
-            ...prev.discussionReplyList,
-            { id: Date.now(), repliedBy: "You", reply: replyText, repliedat: new Date().toISOString() },
-          ],
-        }));
-      } else {
-        throw new Error("Failed to post reply.");
-      }
+      await apiClient.post(
+        `/api/course/replyToDiscussion/${discussionId}`,
+        { reply: replyText },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setModalMessage("Reply posted successfully.");
+      setShowModal(true);
+      setReplyText("");
+      setShowReplyBox(false);
+  
+      // Update the discussion with the new reply
+      setDiscussion((prev) => ({
+        ...prev,
+        discussionReplyList: [
+          ...prev.discussionReplyList,
+          { id: Date.now(), repliedBy: "You", reply: replyText, repliedat: new Date().toISOString() },
+        ],
+      }));
     } catch (err) {
-      setModalMessage("An error occurred while posting the reply.");
+      setModalMessage(err.response?.data?.message || "An error occurred while posting the reply.");
       setShowModal(true);
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   const handleCancelReply = () => {
     setShowReplyBox(false);
@@ -107,26 +102,24 @@ const GetDiscussion = () => {
 
   const handleDelete = async () => {
     const token = localStorage.getItem("token");
+  
     try {
-      const response = await fetch(`http://localhost:8080/api/course/deleteDiscussion/${discussionId}`, {
-        method: "DELETE",
+      const response = await apiClient.delete(`/api/course/deleteDiscussion/${discussionId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setModalMessage(data.message || "Discussion successfully deleted.");
-        setShowModal(true);
-      } else {
-        throw new Error("Failed to delete discussion.");
-      }
+  
+      // Set success message from server response
+      setModalMessage(response.data.message || "Discussion successfully deleted.");
+      setShowModal(true);
     } catch (err) {
-      setModalMessage("An error occurred while deleting the discussion.");
+      // Handle errors and set appropriate message
+      setModalMessage(err.response?.data?.message || "An error occurred while deleting the discussion.");
       setShowModal(true);
     }
   };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);

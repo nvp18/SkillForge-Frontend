@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { FaCheckCircle, FaEdit, FaTrash } from 'react-icons/fa';
+import apiClient from '../../../apiClient';
 
 const AddQuiz = ({ courseId, onClose, onQuizSaved }) => {
     const [quizTitle, setQuizTitle] = useState(''); // Quiz title
@@ -56,38 +56,41 @@ const AddQuiz = ({ courseId, onClose, onQuizSaved }) => {
 
     const handleSaveQuiz = async () => {
         const token = localStorage.getItem("token");
+      
         if (!quizTitle || !quizDescription) {
-            setError("Quiz title and description are required.");
-            return;
+          setError("Quiz title and description are required.");
+          return;
         }
+      
         if (questions.length === 0) {
-            setError("Please add at least one question.");
-            return;
+          setError("Please add at least one question.");
+          return;
         }
+      
         try {
-            const response = await axios.post(
-                `http://localhost:8080/api/course/createQuiz/${courseId}`,
-                {
-                    title: quizTitle,  // Include title
-                    description: quizDescription,  // Include description
-                    questions: questions
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                }
-            );
-            if (response.status === 200) {
-                onQuizSaved();
-                onClose();
+          await apiClient.post(
+            `/api/course/createQuiz/${courseId}`,
+            {
+              title: quizTitle, // Include title
+              description: quizDescription, // Include description
+              questions: questions,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
+          );
+      
+          // Call success callbacks
+          onQuizSaved();
+          onClose();
         } catch (err) {
-            setError("Failed to save quiz. Please try again.");
-            console.error(err);
+          setError(err.response?.data?.message || "Failed to save quiz. Please try again.");
+          console.error(err);
         }
-    };
+      };
+      
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
