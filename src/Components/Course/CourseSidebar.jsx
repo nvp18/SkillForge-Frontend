@@ -196,6 +196,14 @@ const CourseSidebar = ({ courseId }) => {
                 {!isCollapsed ? "Announcements" : <span title="Announcements">📢</span>}
               </Link>
             </li>
+            <li>
+                  <Link
+                    to={`/course/${resolvedCourseId}/create-quiz`}
+                    className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
+                  >
+                    {!isCollapsed ? "Quizzes" : <span title="Create Quiz">📝</span>}
+                  </Link>
+                </li>
 
             {/* Admin-only links */}
             {role === "ADMIN" && (
@@ -214,14 +222,6 @@ const CourseSidebar = ({ courseId }) => {
                     className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
                   >
                     {!isCollapsed ? "Delete Course" : <span title="Delete Course">🗑️</span>}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/course/${resolvedCourseId}/create-quiz`}
-                    className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
-                  >
-                    {!isCollapsed ? "Create Quiz" : <span title="Create Quiz">📝</span>}
                   </Link>
                 </li>
               </>

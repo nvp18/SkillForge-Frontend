@@ -31,6 +31,7 @@ import PageContainer from "./Components/Shared/PageContainer";
 import ProtectedRoute from "./Components/Shared/ProtectedRoute";
 import Sidebar from "./Components/Shared/Sidebar";
 import ViewProfile from './Components/Shared/ViewProfile';
+import AttemptQuiz from "./Components/Course/Quizes/AttemptQuiz";
 
 // Employee Routes
 
@@ -87,6 +88,7 @@ const AppContent = () => {
                       <Route path="announcement/:announcementId" element={<GetAnnouncement />} />
                       <Route path="announcement/:announcementId/editAnnouncement/:announcementId" element={<EditAnnouncement />} />
                       <Route path="create-quiz" element={<Quiz />} />
+                      <Route path="/attempt-quiz/:quizId" element={<AttemptQuiz />} /> {/* New route for AttemptQuiz */}
                       <Route path="discussions" element={<GetDiscussions />} />
                       <Route path="addDiscussion" element={<AddDiscussion />} />
                       <Route path="discussion/:discussionId" element={<GetDiscussion />} />
