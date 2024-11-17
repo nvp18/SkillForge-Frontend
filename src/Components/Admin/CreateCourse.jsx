@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../../apiClient";
+
 
 const CreateCourse = () => {
   const [courseName, setCourseName] = useState("");
@@ -20,35 +22,34 @@ const CreateCourse = () => {
       courseTags,
       daysToFinish: parseInt(daysToFinish, 10),
     };
-
+  
     const token = localStorage.getItem("token");
-
+  
     try {
-      const response = await fetch("http://localhost:8080/api/course/createCourse", {
-        method: "POST",
+      // Axios automatically handles the Content-Type for JSON
+      const response = await apiClient.post("/api/course/createCourse", courseData, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(courseData),
       });
-
-      if (response.ok) {
+  
+      // Axios resolves 2xx status codes, so we check if data is present
+      if (response.data) {
         setModalMessage("Course successfully created");
         setSuccessModalOpen(true);
         resetForm();
-      } else if (response.status === 500) {
+      }
+    } catch (err) {
+      // Handle different error cases
+      if (err.response?.status === 500) {
         setModalMessage("Course creation failed. Please check your input.");
-        setErrorModalOpen(true);
       } else {
         setModalMessage("An error occurred. Please try again.");
-        setErrorModalOpen(true);
       }
-    } catch {
-      setModalMessage("An error occurred while creating the course.");
       setErrorModalOpen(true);
     }
   };
+  
 
   const resetForm = () => {
     setCourseName("");

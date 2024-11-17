@@ -106,6 +106,7 @@ import React, { useEffect, useState } from "react";
 import { FaClock, FaFolderOpen, FaUserEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import b3 from "../../assets/b3.jpg";
+import apiClient from "../../apiClient";
 
 const Dashboard = () => {
   const [courses, setCourses] = useState([]);
@@ -117,38 +118,34 @@ const Dashboard = () => {
     const fetchCourses = async () => {
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
-
+  
       let apiUrl;
       if (role === "ADMIN") {
-        apiUrl = "http://localhost:8080/api/course/getAllCourses";
+        apiUrl = "/api/course/getAllCourses";
       } else if (role === "EMPLOYEE") {
-        apiUrl = `http://localhost:8080/api/employee/getAllEmployeeCourses`;
+        apiUrl = "/api/employee/getAllEmployeeCourses";
       }
-
+  
       try {
-        const response = await fetch(apiUrl, {
-          method: "GET",
+        const response = await apiClient.get(apiUrl, {
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setCourses(data);
-        } else {
-          setError("Failed to fetch courses.");
-        }
+  
+        // Axios handles status codes automatically; data is available directly
+        setCourses(response.data);
       } catch (err) {
-        setError("An error occurred while fetching courses.");
+        // Handle error based on the status or fallback to a default message
+        setError(err.response?.data?.message || "An error occurred while fetching courses.");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchCourses();
   }, []);
+  
 
   if (loading) return <p className="text-center text-gray-600">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;

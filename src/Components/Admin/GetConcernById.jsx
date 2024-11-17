@@ -153,6 +153,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import apiClient from "../../apiClient";
 
 const GetConcernById = () => {
   const { concernId } = useParams();
@@ -170,31 +171,28 @@ const GetConcernById = () => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("role"); // Assuming role is stored in localStorage
     setRole(userRole);
-
+  
     const apiUrl =
       userRole === "ADMIN"
-        ? `http://localhost:8080/api/admin/getAllConcerns`
-        : `http://localhost:8080/api/employee/getConcerns`;
-
+        ? `/api/admin/getAllConcerns`
+        : `/api/employee/getConcerns`;
+  
     try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
+      const response = await apiClient.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        const specificConcern = data.find((c) => c.id === concernId);
-        setConcern(specificConcern);
-      } else {
-        throw new Error("Failed to fetch concern.");
-      }
+  
+      // Access the data directly from the response
+      const specificConcern = response.data.find((c) => c.id === concernId);
+      setConcern(specificConcern);
     } catch (err) {
-      setError(err.message);
+      // Handle error, fallback to generic message if no server message is present
+      setError(err.response?.data?.message || "Failed to fetch concern.");
     }
   };
+  
 
   useEffect(() => {
     fetchConcern();
@@ -204,32 +202,29 @@ const GetConcernById = () => {
     const token = localStorage.getItem("token");
     const replyApiUrl =
       role === "ADMIN"
-        ? `http://localhost:8080/api/admin/replyToConcern/${concernId}`
-        : `http://localhost:8080/api/employee/replyToConcern/${concernId}`;
-
+        ? `/api/admin/replyToConcern/${concernId}`
+        : `/api/employee/replyToConcern/${concernId}`;
+  
     try {
-      const response = await fetch(replyApiUrl, {
-        method: "POST",
+      // Axios handles headers and JSON automatically
+      await apiClient.post(replyApiUrl, { reply: replyText }, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ reply: replyText }),
       });
-
-      if (response.ok) {
-        setModalMessage("Reply sent successfully.");
-        setShowModal(true);
-        setReplyText("");
-        setShowReplyBox(false);
-      } else {
-        throw new Error("Failed to send reply.");
-      }
+  
+      // If the request is successful, perform the following
+      setModalMessage("Reply sent successfully.");
+      setShowModal(true);
+      setReplyText("");
+      setShowReplyBox(false);
     } catch (err) {
-      setModalMessage("An error occurred while sending the reply.");
+      // Handle error
+      setModalMessage(err.response?.data?.message || "An error occurred while sending the reply.");
       setShowModal(true);
     }
   };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import apiClient from "../../apiClient";
+
 
 const CreateUser = () => {
   const [userName, setUserName] = useState("");
@@ -17,35 +19,32 @@ const CreateUser = () => {
       lastName,
       email,
     };
-
+  
     const token = localStorage.getItem("token");
-
+  
     try {
-      const response = await fetch("http://localhost:8080/api/user/createUser", {
-        method: "POST",
+      // Pass the data as the second argument, headers as the third
+      const response = await apiClient.post("/api/user/createUser", userData, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(userData),
       });
-
-      if (response.ok) {
-        setModalMessage("User successfully added.");
-        setSuccessModalOpen(true);
-        resetForm();
-      } else if (response.status === 500) {
+  
+      // Axios resolves if status is 2xx, so handle success directly
+      setModalMessage("User successfully added.");
+      setSuccessModalOpen(true);
+      resetForm();
+    } catch (err) {
+      // Axios throws errors for non-2xx responses, handle based on status
+      if (err.response?.status === 500) {
         setModalMessage("Username already exists.");
-        setErrorModalOpen(true);
       } else {
         setModalMessage("An error occurred. Please try again.");
-        setErrorModalOpen(true);
       }
-    } catch {
-      setModalMessage("An error occurred while creating the user.");
       setErrorModalOpen(true);
     }
   };
+  
 
   const resetForm = () => {
     setUserName("");

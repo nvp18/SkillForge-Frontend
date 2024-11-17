@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import apiClient from "../../apiClient";
 
 const ManageCourses = () => {
   const { userId } = useParams();
@@ -15,95 +16,92 @@ const ManageCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       const token = localStorage.getItem("token");
+  
       try {
-        const response = await fetch(`http://localhost:8080/api/course/getAllCoursesOfEmployee/${userId}`, {
-          method: "GET",
+        // Fetch assigned courses
+        const assignedResponse = await apiClient.get(`/api/course/getAllCoursesOfEmployee/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const assigned = await response.json();
-          setAssignedCourses(assigned.map((entry) => ({
-            course: entry.course,
-            status: entry.status,
-          })));
-
-          const allCoursesResponse = await fetch("http://localhost:8080/api/course/getAllCourses", {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (allCoursesResponse.ok) {
-            const allCourses = await allCoursesResponse.json();
-            const unassigned = allCourses.filter(
-              (course) => !assigned.some((assignedCourse) => assignedCourse.course.courseId === course.courseId)
-            );
-            setUnassignedCourses(unassigned);
-          }
-        } else {
-          throw new Error("Failed to fetch assigned courses.");
-        }
+  
+        const assigned = assignedResponse.data.map((entry) => ({
+          course: entry.course,
+          status: entry.status,
+        }));
+  
+        setAssignedCourses(assigned);
+  
+        // Fetch all courses
+        const allCoursesResponse = await apiClient.get("/api/course/getAllCourses", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        const allCourses = allCoursesResponse.data;
+        const unassigned = allCourses.filter(
+          (course) =>
+            !assigned.some((assignedCourse) => assignedCourse.course.courseId === course.courseId)
+        );
+  
+        setUnassignedCourses(unassigned);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch courses.");
       }
     };
-
+  
     fetchCourses();
   }, [userId]);
+  
 
   const handleAssignCourse = async () => {
     const token = localStorage.getItem("token");
+  
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/course/assignCourseToEmployee/${selectedAssignCourse}/${userId}`,
+      await apiClient.post(
+        `/api/course/assignCourseToEmployee/${selectedAssignCourse}/${userId}`,
+        {},
         {
-          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      if (response.ok) {
-        setModalMessage("Course successfully assigned.");
-      } else {
-        throw new Error("Failed to assign course.");
-      }
-    } catch {
-      setModalMessage("An error occurred while assigning the course.");
+  
+      // If successful, show success message
+      setModalMessage("Course successfully assigned.");
+    } catch (err) {
+      // Handle errors and show appropriate message
+      setModalMessage(err.response?.data?.message || "An error occurred while assigning the course.");
     } finally {
       setShowModal(true);
     }
   };
-
+  
   const handleDeassignCourse = async () => {
     const token = localStorage.getItem("token");
+  
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/course/deassignCourseToEmployee/${selectedDeassignCourse}/${userId}`,
+      await apiClient.delete(
+        `/api/course/deassignCourseToEmployee/${selectedDeassignCourse}/${userId}`,
         {
-          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      if (response.ok) {
-        setModalMessage("Course successfully deassigned.");
-      } else {
-        throw new Error("Failed to deassign course.");
-      }
-    } catch {
-      setModalMessage("An error occurred while deassigning the course.");
+  
+      // If successful, show success message
+      setModalMessage("Course successfully deassigned.");
+    } catch (err) {
+      // Handle errors and show appropriate message
+      setModalMessage(err.response?.data?.message || "An error occurred while deassigning the course.");
     } finally {
       setShowModal(true);
     }
   };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);
