@@ -28,7 +28,7 @@ const DeleteCourse = () => {
 
   const handleSuccessClose = () => {
     setSuccessModalOpen(false);
-    navigate("/admin/dashboard");
+    navigate("/dashboard");
   };
 
   const handleCancel = () => {

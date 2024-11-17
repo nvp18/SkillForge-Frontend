@@ -10,30 +10,47 @@ const Quiz = () => {
     const [quiz, setQuiz] = useState(null); // Expecting a single quiz object with minimal details
     const [showAddQuiz, setShowAddQuiz] = useState(false);
     const [error, setError] = useState(null);
-    const [userRole, setUserRole] = useState(''); // Replace with actual role logic
+    const [userRole, setUserRole] = useState(''); 
+    const [courseStatus, setCourseStatus] = useState(''); // Track course status to disable Attempt button
 
     // Load quiz data for the course
-const loadQuiz = async () => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    setUserRole(role);
-  
-    try {
-      const response = await apiClient.get(`/api/course/getQuiz/${courseId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-  
-      setQuiz(response.data); // Expecting an object { id, title, description }
-      setError(null);
-    } catch (err) {
-      setError(err.response?.data?.message || 'There was an error fetching the quiz.');
-      console.error(err);
-    }
-  };
-  
+    const loadQuiz = async () => {
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        setUserRole(role);
+
+        try {
+            const response = await apiClient.get(`/api/course/getQuiz/${courseId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setQuiz(response.data); // Expecting an object { id, title, description }
+            setError(null);
+        } catch (err) {
+            if (err.response && err.response.status === 404) {
+                setError('No quiz available for this course.');
+            } else {
+                setError(err.response?.data?.message || 'There was an error fetching the quiz.');
+            }
+            console.error(err);
+        }
+    };
+
+    // Fetch course status to disable Attempt Quiz button if COMPLETED
+    const loadCourseStatus = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await apiClient.get(`/api/employee/getCourseStatus/${courseId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setCourseStatus(response.data.status); // Expecting a status field, e.g., { status: "COMPLETED" }
+        } catch (err) {
+            console.error('Error fetching course status:', err.response?.data?.message || err.message);
+        }
+    };
 
     useEffect(() => {
         loadQuiz();
+        loadCourseStatus();
     }, [courseId]);
 
     const handleAddQuiz = () => {
@@ -48,24 +65,21 @@ const loadQuiz = async () => {
     const handleAttemptQuiz = (quiz) => {
         navigate(`/course/${courseId}/attempt-quiz/${quiz.id}`); // Include courseId in the path
     };
-    
 
     const handleDeleteQuiz = async () => {
         const token = localStorage.getItem('token');
-      
         try {
-          await apiClient.delete(`/api/course/deleteQuiz/${quiz.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-      
-          setQuiz(null); // Clear quiz after deletion
-          setError(null);
+            await apiClient.delete(`/api/course/deleteQuiz/${quiz.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setQuiz(null); // Clear quiz after deletion
+            setError(null);
         } catch (err) {
-          setError(err.response?.data?.message || 'Failed to delete the quiz. Please try again.');
-          console.error(err);
+            setError(err.response?.data?.message || 'Failed to delete the quiz. Please try again.');
+            console.error(err);
         }
-      };
-      
+    };
 
     return (
         <div className="flex">
@@ -106,7 +120,10 @@ const loadQuiz = async () => {
                             </div>
                             <button
                                 onClick={() => handleAttemptQuiz(quiz)}
-                                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                                className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded ${
+                                    courseStatus === 'COMPLETED' ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                                disabled={courseStatus === 'COMPLETED'}
                             >
                                 Attempt
                             </button>

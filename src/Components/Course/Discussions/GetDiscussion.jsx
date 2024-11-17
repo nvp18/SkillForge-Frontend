@@ -113,6 +113,11 @@ const GetDiscussion = () => {
       // Set success message from server response
       setModalMessage(response.data.message || "Discussion successfully deleted.");
       setShowModal(true);
+  
+      // Ensure redirection happens only after confirmation
+      setTimeout(() => {
+        navigate(`/course/${courseId}/discussions`);
+      }, 2000); // Optional delay for better user experience
     } catch (err) {
       // Handle errors and set appropriate message
       setModalMessage(err.response?.data?.message || "An error occurred while deleting the discussion.");
