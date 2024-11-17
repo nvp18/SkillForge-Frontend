@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
+import apiClient from "../../../apiClient";
 
 const GetAnnouncement = () => {
   const { announcementId, courseId } = useParams();
@@ -16,33 +17,29 @@ const GetAnnouncement = () => {
       const token = localStorage.getItem("token");
       const userRole = localStorage.getItem("role"); // Assuming role is stored in localStorage
       setRole(userRole);
-
+  
       const apiUrl =
         userRole === "ADMIN"
-          ? `http://localhost:8080/api/admin/getAnnouncement/${announcementId}`
-          : `http://localhost:8080/api/employee/getAnnouncement/${announcementId}`;
-
+          ? `/api/admin/getAnnouncement/${announcementId}`
+          : `/api/employee/getAnnouncement/${announcementId}`;
+  
       try {
-        const response = await fetch(apiUrl, {
-          method: "GET",
+        const response = await apiClient.get(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setAnnouncement(data);
-        } else {
-          throw new Error("Failed to fetch announcement.");
-        }
+  
+        // Set the announcement data
+        setAnnouncement(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch announcement.");
       }
     };
-
+  
     fetchAnnouncement();
   }, [announcementId]);
+  
 
   const handleEdit = () => {
     navigate(`editAnnouncement/${announcementId}`);
@@ -50,30 +47,27 @@ const GetAnnouncement = () => {
 
   const handleDelete = async () => {
     const token = localStorage.getItem("token");
+  
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/admin/deleteAnnouncement/${announcementId}`,
+      const response = await apiClient.delete(
+        `/api/admin/deleteAnnouncement/${announcementId}`,
         {
-          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      if (response.ok) {
-        const data = await response.json();
-        setModalMessage(data.message);
-        setShowModal(true);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete announcement.");
-      }
+  
+      // Set the success message from the server response
+      setModalMessage(response.data.message);
+      setShowModal(true);
     } catch (err) {
-      setModalMessage(err.message || "Failed to delete announcement.");
+      // Handle errors and set the appropriate message
+      setModalMessage(err.response?.data?.message || "Failed to delete announcement.");
       setShowModal(true);
     }
   };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);

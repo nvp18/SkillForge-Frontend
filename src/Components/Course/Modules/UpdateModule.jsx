@@ -1,6 +1,7 @@
 // UpdateModule.jsx
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import apiClient from "../../../apiClient";
 
 const UpdateModule = () => {
   const { courseId, moduleId } = useParams();
@@ -16,28 +17,25 @@ const UpdateModule = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token"); // Get JWT token from local storage
+  
     const formData = new FormData();
     formData.append("file", file);
     formData.append("modulename", moduleName);
-    
+  
     try {
-      const response = await fetch(`http://localhost:8080/api/course/updateCourseModule/${moduleId}`, {
-        method: "PUT",
+      await apiClient.put(`/api/course/updateCourseModule/${moduleId}`, formData, {
         headers: {
-          "Authorization": `Bearer ${token}`, // Include JWT in Authorization header
+          Authorization: `Bearer ${token}`, // Include JWT in Authorization header
+          "Content-Type": "multipart/form-data", // Set content type for file upload
         },
-        body: formData,
       });
-
-      if (response.ok) {
-        navigate(`/course/${courseId}/getModules`); // Redirect to GetModules on success
-      } else {
-        setError("Failed to update the module. Please try again.");
-      }
+  
+      navigate(`/course/${courseId}/getModules`); // Redirect to GetModules on success
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError(err.response?.data?.message || "Failed to update the module. Please try again.");
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">

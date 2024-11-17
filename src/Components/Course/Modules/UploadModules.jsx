@@ -1,6 +1,7 @@
 // UploadModule.jsx
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import apiClient from "../../../apiClient";
 
 const UploadModule = () => {
   const { courseId } = useParams();
@@ -18,29 +19,25 @@ const UploadModule = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const formData = new FormData();
-
+  
     formData.append("modulename", moduleName);
     formData.append("file", file);
     formData.append("modulenumber", moduleNumber);
-
+  
     try {
-      const response = await fetch(`http://localhost:8080/api/course/uploadCourseModule/${courseId}`, {
-        method: "POST",
+      await apiClient.post(`/api/course/uploadCourseModule/${courseId}`, formData, {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data", // Handled automatically by Axios with FormData
         },
-        body: formData,
       });
-
-      if (response.ok) {
-        navigate(`/course/${courseId}/getModules`); // Redirect to GetModules page after successful upload
-      } else {
-        throw new Error("Failed to upload module");
-      }
+  
+      navigate(`/course/${courseId}/getModules`); // Redirect to GetModules page after successful upload
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || "Failed to upload module. Please try again.");
     }
   };
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">

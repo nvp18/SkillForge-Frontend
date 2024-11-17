@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
+import apiClient from "../../../apiClient";
 
 const AddDiscussion = () => {
   const { courseId } = useParams();
@@ -13,30 +14,29 @@ const AddDiscussion = () => {
 
   const handlePostDiscussion = async () => {
     const token = localStorage.getItem("token");
-
+  
     try {
-      const response = await fetch(`http://localhost:8080/api/course/postDiscussion/${courseId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title, description }),
-      });
-
-      if (response.ok) {
-        setModalMessage("Discussion successfully posted.");
-        setShowModal(true);
-      } else {
-        setModalMessage("Failed to post discussion.");
-        setShowModal(true);
-      }
+      await apiClient.post(
+        `/api/course/postDiscussion/${courseId}`,
+        { title, description },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Show success modal if the request is successful
+      setModalMessage("Discussion successfully posted.");
+      setShowModal(true);
     } catch (error) {
-      setError("An error occurred while posting the discussion.");
+      // Handle errors and show appropriate message
+      setError(error.response?.data?.message || "An error occurred while posting the discussion.");
       setModalMessage("Failed to post discussion.");
       setShowModal(true);
     }
   };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);

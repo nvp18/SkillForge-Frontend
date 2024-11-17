@@ -2,33 +2,27 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCourse } from "./CourseContext";
 import CourseSidebar from "./CourseSidebar";
+import apiClient from "../../apiClient"; // Adjust the path as necessary
 
 const CoursePage = () => {
   const { courseId } = useParams();
   const { courseDetails, setCourseDetails } = useCourse();
   const [error, setError] = useState(null);
 
+  
   useEffect(() => {
     const fetchCourseDetails = async () => {
-      const token = localStorage.getItem("token");
       try {
-        const response = await fetch(`http://localhost:8080/api/course/getCourseDetails/${courseId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) throw new Error("Failed to fetch course details");
-        const data = await response.json();
-        setCourseDetails(data);
+        const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`);
+        setCourseDetails(response.data); // Axios directly returns data in response.data
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch course details.");
       }
     };
-
+  
     fetchCourseDetails();
   }, [courseId, setCourseDetails]);
+  
 
   if (error) return <p className="text-red-500">Error: {error}</p>;
   if (!courseDetails) return <p>Loading...</p>;

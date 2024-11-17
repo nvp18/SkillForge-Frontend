@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
+import apiClient from "../../../apiClient";
 
 const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -12,31 +13,28 @@ const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
       try {
         setIsLoading(true);
         setError(null);
+  
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          `http://localhost:8080/api/course/getModuleContent/${moduleContents[currentIndex].moduleId}`,
+  
+        const response = await apiClient.get(
+          `/api/course/getModuleContent/${moduleContents[currentIndex].moduleId}`,
           {
-            method: "GET",
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-        if (response.ok) {
-          const data = await response.json();
-          setSelectedPdfUrl(data.message);
-        } else {
-          throw new Error("Failed to fetch PDF URL.");
-        }
+  
+        setSelectedPdfUrl(response.data.message);
       } catch (error) {
-        setError(error.message);
+        setError(error.response?.data?.message || "Failed to fetch PDF URL.");
         setSelectedPdfUrl(null);
       } finally {
         setIsLoading(false);
       }
     };
-
+  
     fetchPdfUrl();
   }, [currentIndex, moduleContents]);
+  
 
   const goToPrevModule = () => {
     if (currentIndex > 0) {

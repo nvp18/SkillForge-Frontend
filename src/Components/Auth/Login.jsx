@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/Logo.svg';
 import './Login.css'; // Ensure your custom styles (if any) are included
+import apiClient from '../../apiClient'; // Use your configured Axios instance
 
 const Login = () => {
   const [userName, setuserName] = useState(''); 
@@ -12,30 +13,32 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  // Function to handle login
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8080/api/user/login', {
-        userName, 
-        password,
-      });
 
-      console.log(response.data);
-      const { Token, Role } = response.data;
-      localStorage.setItem('token', Token);
-      localStorage.setItem('role', Role);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await apiClient.post('/api/user/login', {
+      userName, 
+      password,
+    });
 
-      if (Role === 'ADMIN') {
-        navigate('/dashboard');
-      } else if (Role === 'EMPLOYEE') {
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      console.log(error);
-      setErrorMessage('Login failed. Please check your credentials.');
+    console.log(response.data);
+    const { Token, Role } = response.data;
+
+    // Store token and role in localStorage
+    localStorage.setItem('token', Token);
+    localStorage.setItem('role', Role);
+
+    // Navigate based on role
+    if (Role === 'ADMIN' || Role === 'EMPLOYEE') {
+      navigate('/dashboard');
     }
-  };
+  } catch (error) {
+    console.error(error);
+    setErrorMessage(error.response?.data?.message || 'Login failed. Please check your credentials.');
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">

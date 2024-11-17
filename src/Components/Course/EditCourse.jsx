@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "./CourseSidebar";
+import apiClient from "../../apiClient";
 
 const EditCourse = () => {
   const { courseId } = useParams();
@@ -14,57 +15,37 @@ const EditCourse = () => {
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(`http://localhost:8080/api/course/getCourseDetails/${courseId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setCourseDescription(data.courseDescription);
-          setCourseTags(data.courseTags);
-          setDaysToFinish(data.daysToFinish);
-        } else {
-          setError("Failed to load course details.");
-        }
+        const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`);
+        const data = response.data;
+  
+        setCourseDescription(data.courseDescription);
+        setCourseTags(data.courseTags);
+        setDaysToFinish(data.daysToFinish);
       } catch (err) {
-        setError("An error occurred. Please try again.");
+        setError(err.response?.data?.message || "Failed to load course details.");
       }
     };
-
+  
     fetchCourseDetails();
   }, [courseId]);
 
   const handleUpdateCourse = async (e) => {
-    e.preventDefault();
-    const updatedCourseData = {
-      courseDescription,
-      courseTags,
-      daysToFinish: parseInt(daysToFinish, 10),
-    };
+  e.preventDefault();
 
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/course/updateCourse/${courseId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedCourseData),
-      });
-
-      if (response.ok) {
-        setSuccessModalOpen(true);
-      } else {
-        setError("Failed to update course details.");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-    }
+  const updatedCourseData = {
+    courseDescription,
+    courseTags,
+    daysToFinish: parseInt(daysToFinish, 10),
   };
+
+  try {
+    await apiClient.put(`/api/course/updateCourse/${courseId}`, updatedCourseData);
+    setSuccessModalOpen(true);
+  } catch (err) {
+    setError(err.response?.data?.message || "Failed to update course details. Please try again.");
+  }
+};
+
 
   const handleCancel = () => {
     navigate(`/course/${courseId}`);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
+import apiClient from "../../../apiClient";
 
 const AddAnnouncement = () => {
   const { courseId } = useParams();
@@ -12,26 +13,25 @@ const AddAnnouncement = () => {
 
   const handlePostAnnouncement = async () => {
     const token = localStorage.getItem("token");
-
+  
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/postAnnouncement/${courseId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title, description }),
-      });
-
-      if (response.ok) {
-        setShowModal(true); // Show success modal on success
-      } else {
-        throw new Error("Announcement failed to post.");
-      }
+      await apiClient.post(`/api/admin/postAnnouncement/${courseId}`, 
+        { title, description }, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Show success modal on success
+      setShowModal(true);
     } catch (error) {
-      setError("An error occurred while posting the announcement. Please try again.");
+      // Handle error and set error message
+      setError(error.response?.data?.message || "An error occurred while posting the announcement. Please try again.");
     }
   };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);

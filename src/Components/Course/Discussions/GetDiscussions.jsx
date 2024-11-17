@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
+import apiClient from "../../../apiClient";
 
 const GetDiscussions = () => {
   const { courseId } = useParams();
@@ -11,31 +12,27 @@ const GetDiscussions = () => {
   useEffect(() => {
     const fetchDiscussions = async () => {
       const token = localStorage.getItem("token");
+  
       try {
-        const response = await fetch(`http://localhost:8080/api/course/getAllDiscussions/${courseId}`, {
-          method: "GET",
+        const response = await apiClient.get(`/api/course/getAllDiscussions/${courseId}`, {
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Sort discussions by date, newest first
-          const sortedDiscussions = data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          );
-          setDiscussions(sortedDiscussions);
-        } else {
-          throw new Error("Failed to fetch discussions.");
-        }
+  
+        // Sort discussions by date, newest first
+        const sortedDiscussions = response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setDiscussions(sortedDiscussions);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch discussions.");
       }
     };
-
+  
     fetchDiscussions();
   }, [courseId]);
+  
 
   const handleAddDiscussion = () => {
     navigate(`/course/${courseId}/addDiscussion`);

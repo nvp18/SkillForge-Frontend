@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
+import apiClient from "../../../apiClient";
 
 const EditAnnouncement = () => {
   const { announcementId, courseId } = useParams();
@@ -13,50 +14,49 @@ const EditAnnouncement = () => {
   useEffect(() => {
     const fetchAnnouncementDetails = async () => {
       const token = localStorage.getItem("token");
-
+  
       try {
-        const response = await fetch(`http://localhost:8080/api/admin/getAnnouncement/${announcementId}`, {
-          method: "GET",
-          headers: { "Authorization": `Bearer ${token}` },
+        const response = await apiClient.get(`/api/admin/getAnnouncement/${announcementId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setTitle(data.title);
-          setDescription(data.description);
-        } else {
-          throw new Error("Failed to fetch announcement details.");
-        }
+  
+        // Access the data directly from the response
+        const data = response.data;
+        setTitle(data.title);
+        setDescription(data.description);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch announcement details.");
       }
     };
-
+  
     fetchAnnouncementDetails();
   }, [announcementId]);
+  
 
   const handleEditAnnouncement = async () => {
     const token = localStorage.getItem("token");
-
+  
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/editAnnouncement/${announcementId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title, description }),
-      });
-
-      if (response.ok) {
-        setShowModal(true);
-      } else {
-        throw new Error("Failed to edit announcement.");
-      }
+      await apiClient.put(
+        `/api/admin/editAnnouncement/${announcementId}`,
+        { title, description },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Show success modal on success
+      setShowModal(true);
     } catch (err) {
-      setError("An error occurred while editing the announcement. Please try again.");
+      // Handle errors and set an appropriate message
+      setError(err.response?.data?.message || "An error occurred while editing the announcement. Please try again.");
     }
   };
+  
 
   const handleCloseModal = () => {
     setShowModal(false);

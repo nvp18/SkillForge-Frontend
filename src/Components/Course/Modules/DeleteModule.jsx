@@ -1,6 +1,7 @@
 // DeleteModule.jsx
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import apiClient from "../../../apiClient";
 
 const DeleteModule = () => {
   const { moduleId, courseId } = useParams();
@@ -11,22 +12,21 @@ const DeleteModule = () => {
   const handleDeleteModule = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/course/deleteCourseModule/${moduleId}`, {
-        method: "DELETE",
+      
+      await apiClient.delete(`/api/course/deleteCourseModule/${moduleId}`, {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-
-      if (response.ok) {
-        setSuccessModalOpen(true);
-      } else {
-        setError("Failed to delete the module.");
-      }
+  
+      // Show success modal if deletion is successful
+      setSuccessModalOpen(true);
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      // Handle errors and set appropriate message
+      setError(err.response?.data?.message || "Failed to delete the module. Please try again.");
     }
   };
+  
 
   const handleSuccessClose = () => {
     setSuccessModalOpen(false);

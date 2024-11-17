@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseSidebar from "../CourseSidebar";
+import apiClient from "../../../apiClient";
 
 const Announcements = () => {
   const { courseId } = useParams();
@@ -14,37 +15,32 @@ const Announcements = () => {
       const token = localStorage.getItem("token");
       const userRole = localStorage.getItem("role"); // Assuming role is stored in localStorage
       setRole(userRole);
-
+  
       const apiUrl =
         userRole === "ADMIN"
-          ? `http://localhost:8080/api/admin/getAllAnnouncements/${courseId}`
-          : `http://localhost:8080/api/employee/getAllAnnouncements/${courseId}`;
-
+          ? `/api/admin/getAllAnnouncements/${courseId}`
+          : `/api/employee/getAllAnnouncements/${courseId}`;
+  
       try {
-        const response = await fetch(apiUrl, {
-          method: "GET",
+        const response = await apiClient.get(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Sort announcements by date, newest first
-          const sortedAnnouncements = data.sort(
-            (a, b) => new Date(b.createdat) - new Date(a.createdat)
-          );
-          setAnnouncements(sortedAnnouncements);
-        } else {
-          throw new Error("Failed to fetch announcements.");
-        }
+  
+        // Sort announcements by date, newest first
+        const sortedAnnouncements = response.data.sort(
+          (a, b) => new Date(b.createdat) - new Date(a.createdat)
+        );
+        setAnnouncements(sortedAnnouncements);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch announcements.");
       }
     };
-
+  
     fetchAnnouncements();
   }, [courseId]);
+  
 
   return (
     <div className="flex">
