@@ -10,11 +10,13 @@ const Quiz = () => {
     const [quiz, setQuiz] = useState(null); // Expecting a single quiz object with minimal details
     const [showAddQuiz, setShowAddQuiz] = useState(false);
     const [error, setError] = useState(null);
-    const [userRole, setUserRole] = useState('admin'); // Replace with actual role logic
+    const [userRole, setUserRole] = useState(''); // Replace with actual role logic
 
     // Load quiz data for the course
     const loadQuiz = async () => {
         const token = localStorage.getItem('token');
+        const role  = localStorage.getItem('role');
+        setUserRole(role);
         try {
             const response = await axios.get(`http://localhost:8080/api/course/getQuiz/${courseId}`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -68,7 +70,7 @@ const Quiz = () => {
 
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-3xl font-bold text-[#342056]">Quiz</h1>
-                    {userRole === 'admin' && !quiz && (
+                    {userRole === 'ADMIN' && !quiz && (
                         <button
                             onClick={handleAddQuiz}
                             className="bg-[#368e8f] hover:bg-[#5aa5a8] text-white font-bold py-2 px-4 rounded"
@@ -76,7 +78,7 @@ const Quiz = () => {
                             Add Quiz
                         </button>
                     )}
-                    {userRole === 'admin' && quiz && (
+                    {userRole === 'ADMIN' && quiz && (
                         <p className="text-gray-500">A quiz is already added. Cannot add another quiz.</p>
                     )}
                 </div>
@@ -104,7 +106,7 @@ const Quiz = () => {
                             </button>
                         </div>
 
-                        {userRole === 'admin' && (
+                        {userRole === 'ADMIN' && (
                             <div className="flex justify-end mt-4">
                                 <button
                                     onClick={handleDeleteQuiz}
