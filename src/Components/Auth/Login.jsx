@@ -1,10 +1,9 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
 import { useNavigate } from 'react-router-dom';
-import logo from '../../assets/Logo.svg';
-import './Login.css'; // Ensure your custom styles (if any) are included
 import apiClient from '../../apiClient'; // Use your configured Axios instance
+import logo from '../../assets/logo.svg';
+import './Login.css'; // Ensure your custom styles (if any) are included
 
 const Login = () => {
   const [userName, setuserName] = useState(''); 
