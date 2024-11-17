@@ -13,7 +13,12 @@ const CoursePage = () => {
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
-        const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`);
+        const token = localStorage.getItem("token");
+        const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setCourseDetails(response.data); // Axios directly returns data in response.data
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch course details.");

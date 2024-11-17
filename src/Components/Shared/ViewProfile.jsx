@@ -45,7 +45,12 @@ const ViewProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await apiClient.get("/api/user/viewProfile");
+        const token = localStorage.getItem("token");
+        const response = await apiClient.get("/api/user/viewProfile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = response.data;
         setProfile({
           userId: data.userId,

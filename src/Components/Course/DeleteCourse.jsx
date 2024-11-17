@@ -13,7 +13,12 @@ const DeleteCourse = () => {
   const handleDeleteCourse = async () => {
     setConfirmDelete(false); // Hide confirmation section
     try {
-      await apiClient.delete(`/api/course/deleteCourse/${courseId}`);
+      const token = localStorage.getItem("token");
+      await apiClient.delete(`/api/course/deleteCourse/${courseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setSuccessModalOpen(true); // Show success modal on success
     } catch (err) {
       setError(err.response?.data?.message || "Failed to delete the course. Please try again.");
