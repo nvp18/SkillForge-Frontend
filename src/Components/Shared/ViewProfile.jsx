@@ -1,31 +1,40 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import apiClient from "../../apiClient";
 
-const SuccessModal = ({ message, onClose }) => {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">{message}</h2>
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
-          >
-            Close
-          </button>
-        </div>
-      </div>
+const Modal = ({ children, onClose }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-lg relative">
+      <button
+        onClick={onClose}
+        className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+      >
+        ✕
+      </button>
+      {children}
     </div>
-  );
-};
+  </div>
+);
+
+const SuccessModal = ({ message, onClose }) => (
+  <Modal onClose={onClose}>
+    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">{message}</h2>
+    <div className="flex justify-end">
+      <button
+        onClick={onClose}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+      >
+        Close
+      </button>
+    </div>
+  </Modal>
+);
 
 const ViewProfile = () => {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // Success modal state
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
     firstName: "",
     lastName: "",
@@ -42,10 +51,17 @@ const ViewProfile = () => {
   });
   const [passwordError, setPasswordError] = useState(null);
 
+  // Retrieve token once and store it in a variable
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await apiClient.get("/api/user/viewProfile");
+        const response = await apiClient.get("/api/user/viewProfile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = response.data;
         setProfile({
           userId: data.userId,
@@ -59,9 +75,9 @@ const ViewProfile = () => {
         console.error("Error fetching profile data:", error.response?.data?.message || error.message);
       }
     };
-  
+
     fetchProfile();
-  }, []);
+  }, [token]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,31 +113,48 @@ const ViewProfile = () => {
     }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setProfile({ ...profile, ...editFormData });
-    setIsEditing(false);
+
+    try {
+      const response = await apiClient.put("/api/user/updateProfile", editFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        ...response.data,
+      }));
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error.response?.data?.message || error.message);
+    }
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordError(null);
-  
+
     if (passwordFormData.newPassword !== passwordFormData.confirmPassword) {
       setPasswordError("New password and confirm password do not match.");
       return;
     }
-  
+
     try {
-      const response = await apiClient.put("/api/user/changePassword", passwordFormData);
-  
-      setShowSuccessModal(true); // Show success modal
+      await apiClient.put("/api/user/changePassword", passwordFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setShowSuccessModal(true);
       setIsChangingPassword(false);
     } catch (error) {
       setPasswordError(error.response?.data?.message || "An error occurred while changing the password.");
     }
   };
-  
 
   return (
     <div className="flex flex-col min-h-[90vh] bg-gray-100 px-4">
@@ -137,13 +170,13 @@ const ViewProfile = () => {
             <div className="mt-4 sm:mt-0 space-y-2 sm:space-y-0 sm:space-x-4">
               <button
                 onClick={toggleEdit}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full sm:w-auto"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
               >
                 Edit Profile
               </button>
               <button
                 onClick={togglePasswordChange}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg w-full sm:w-auto"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg"
               >
                 Change Password
               </button>
@@ -187,55 +220,94 @@ const ViewProfile = () => {
         </div>
       </div>
 
-      {/* Change Password Modal */}
-      {isChangingPassword && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-lg">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">Change Password</h2>
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              {["currentPassword", "newPassword", "confirmPassword"].map((field, index) => (
-                <div key={index} className="relative">
-                  <label className="block text-gray-700 font-semibold capitalize">
-                    {field.replace(/([A-Z])/g, " $1")}:
-                  </label>
-                  <input
-                    type={passwordVisibility[field] ? "text" : "password"}
-                    name={field}
-                    value={passwordFormData[field]}
-                    onChange={handlePasswordInputChange}
-                    className="w-full px-4 py-2 border rounded-lg text-sm sm:text-base"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => togglePasswordVisibility(field)}
-                    className="absolute right-3 top-9 text-gray-600 focus:outline-none"
-                  >
-                    {passwordVisibility[field] ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-              ))}
-              {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setIsChangingPassword(false)}
-                  className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg w-full sm:w-auto"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg w-full sm:w-auto"
-                >
-                  Change Password
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {isEditing && (
+        <Modal onClose={() => setIsEditing(false)}>
+          <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
+          <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div>
+              <label className="block text-gray-700 font-semibold">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                value={editFormData.firstName}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={editFormData.lastName}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded-lg"
+              />
+            </div>
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </Modal>
       )}
 
-      {/* Success Modal */}
+      {isChangingPassword && (
+        <Modal onClose={() => setIsChangingPassword(false)}>
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">Change Password</h2>
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            {["currentPassword", "newPassword", "confirmPassword"].map((field, index) => (
+              <div key={index} className="relative">
+                <label className="block text-gray-700 font-semibold capitalize">
+                  {field.replace(/([A-Z])/g, " $1")}:
+                </label>
+                <input
+                  type={passwordVisibility[field] ? "text" : "password"}
+                  name={field}
+                  value={passwordFormData[field]}
+                  onChange={handlePasswordInputChange}
+                  className="w-full px-4 py-2 border rounded-lg text-sm sm:text-base"
+                />
+                <button
+                  type="button"
+                  onClick={() => togglePasswordVisibility(field)}
+                  className="absolute right-3 top-9 text-gray-600 focus:outline-none"
+                >
+                  {passwordVisibility[field] ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            ))}
+            {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => setIsChangingPassword(false)}
+                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Change Password
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
       {showSuccessModal && (
         <SuccessModal
           message="Your password has been successfully updated."

@@ -62,7 +62,7 @@ const CreateCourse = () => {
     setSuccessModalOpen(false);
     setErrorModalOpen(false);
     if (successModalOpen) {
-      navigate("/admin/dashboard");
+      navigate("/dashboard");
     }
   };
 

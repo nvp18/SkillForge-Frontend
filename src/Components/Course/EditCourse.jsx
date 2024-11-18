@@ -11,11 +11,17 @@ const EditCourse = () => {
   const [daysToFinish, setDaysToFinish] = useState("");
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [error, setError] = useState(null);
+  
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
-        const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`);
+        const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = response.data;
   
         setCourseDescription(data.courseDescription);
@@ -39,7 +45,11 @@ const EditCourse = () => {
   };
 
   try {
-    await apiClient.put(`/api/course/updateCourse/${courseId}`, updatedCourseData);
+    await apiClient.put(`/api/course/updateCourse/${courseId}`, updatedCourseData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
     setSuccessModalOpen(true);
   } catch (err) {
     setError(err.response?.data?.message || "Failed to update course details. Please try again.");
