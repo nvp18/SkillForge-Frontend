@@ -99,3 +99,18 @@ Ensure the following are installed:
 4. Run tests
     ```bash 
     npm run tests
+
+
+### Routing
+The application uses React Router for navigation. Key routes include:
+
+- /login: User login page.
+- /dashboard: Dashboard for both Admins and Employees.
+- /admin/create-course: Admin creates a new course.
+- /course/:courseId: Course-specific details for both Admins and Employees.
+- /course/:courseId/modules: List of course modules.
+- /course/:courseId/quiz: Quiz management.
+- /course/:courseId/announcements: Course announcements.
+- /course/:courseId/discussions: Discussion threads.
+- /concerns: Manage and respond to concerns.
+
