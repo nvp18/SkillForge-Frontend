@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CourseSidebar from "../CourseSidebar";
 import apiClient from "../../../apiClient";
+import CourseSidebar from "../CourseSidebar";
 
 const GetDiscussions = () => {
   const { courseId } = useParams();
@@ -39,9 +39,11 @@ const GetDiscussions = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex min-h-[88vh] bg-gray-50">
       <CourseSidebar />
-      <div className="flex-1 ml-16 md:ml-64 lg:ml-72 p-4 bg-gray-50 min-h-[88vh]">
+      <div className={`flex-1 transition-all duration-300 ease-in-out ${
+          window.innerWidth < 768 ? "ml-16" : "ml-[15vw]"
+        } p-8 space-y-6`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-[#342056]">Discussions</h1>

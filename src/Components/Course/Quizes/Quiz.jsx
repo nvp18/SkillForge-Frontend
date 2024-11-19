@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import apiClient from '../../../apiClient';
 import CourseSidebar from '../../Course/CourseSidebar';
 import AddQuiz from './AddQuiz';
-import apiClient from '../../../apiClient';
 
 const Quiz = () => {
     const navigate = useNavigate();
     const { courseId } = useParams();
-    const [quiz, setQuiz] = useState(null); // Expecting a single quiz object with minimal details
+    const [quiz, setQuiz] = useState(null);
     const [showAddQuiz, setShowAddQuiz] = useState(false);
     const [error, setError] = useState(null);
-    const [userRole, setUserRole] = useState(''); 
-    const [courseStatus, setCourseStatus] = useState(''); // Track course status to disable Attempt button
+    const [userRole, setUserRole] = useState('');
+    const [courseStatus, setCourseStatus] = useState('');
 
-    // Load quiz data for the course
     const loadQuiz = async () => {
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
@@ -23,7 +22,7 @@ const Quiz = () => {
             const response = await apiClient.get(`/api/course/getQuiz/${courseId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setQuiz(response.data); // Expecting an object { id, title, description }
+            setQuiz(response.data);
             setError(null);
         } catch (err) {
             if (err.response && err.response.status === 404) {
@@ -35,14 +34,13 @@ const Quiz = () => {
         }
     };
 
-    // Fetch course status to disable Attempt Quiz button if COMPLETED
     const loadCourseStatus = async () => {
         const token = localStorage.getItem('token');
         try {
             const response = await apiClient.get(`/api/employee/getCourseStatus/${courseId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setCourseStatus(response.data.status); // Expecting a status field, e.g., { status: "COMPLETED" }
+            setCourseStatus(response.data.status);
         } catch (err) {
             console.error('Error fetching course status:', err.response?.data?.message || err.message);
         }
@@ -59,11 +57,11 @@ const Quiz = () => {
 
     const handleQuizSaved = () => {
         setShowAddQuiz(false);
-        loadQuiz(); // Reload quizzes
+        loadQuiz();
     };
 
     const handleAttemptQuiz = (quiz) => {
-        navigate(`/course/${courseId}/attempt-quiz/${quiz.id}`); // Include courseId in the path
+        navigate(`/course/${courseId}/attempt-quiz/${quiz.id}`);
     };
 
     const handleDeleteQuiz = async () => {
@@ -73,7 +71,7 @@ const Quiz = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            setQuiz(null); // Clear quiz after deletion
+            setQuiz(null);
             setError(null);
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to delete the quiz. Please try again.');
@@ -82,11 +80,15 @@ const Quiz = () => {
     };
 
     return (
-        <div className="flex">
+        <div className=" flex min-h-[88vh] bg-gray-50">
             <CourseSidebar courseId={courseId} />
 
             <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[88vh]">
-                {error && <p className="text-red-500">{error}</p>}
+                {error && (
+                    <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4">
+                        <p className="font-semibold">{error}</p>
+                    </div>
+                )}
 
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-3xl font-bold text-[#342056]">Quiz</h1>

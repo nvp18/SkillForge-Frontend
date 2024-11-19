@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CourseSidebar from "../CourseSidebar";
 import apiClient from "../../../apiClient";
+import CourseSidebar from "../CourseSidebar";
 
 const Announcements = () => {
   const { courseId } = useParams();
@@ -43,7 +43,7 @@ const Announcements = () => {
   
 
   return (
-    <div className="flex">
+    <div className="flex min-h-[88vh] bg-gray-50">
       <CourseSidebar />
       <div className="flex-1 ml-64 md:ml-60 p-4 sm:p-8 bg-gray-50 min-h-[88vh]">
         {/* Header */}

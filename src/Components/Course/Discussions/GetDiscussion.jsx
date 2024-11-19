@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CourseSidebar from "../CourseSidebar";
 import apiClient from "../../../apiClient";
+import CourseSidebar from "../CourseSidebar";
 
 const GetDiscussion = () => {
   const { courseId, discussionId } = useParams();
@@ -137,7 +137,7 @@ const GetDiscussion = () => {
   if (!discussion) return <p>Loading...</p>;
 
   return (
-    <div className="flex">
+    <div className="flex min-h-[88vh] bg-gray-50">
       <CourseSidebar />
       <div className="flex-1 ml-16 md:ml-64 p-4 md:p-8 bg-gray-50 min-h-[90vh]">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
