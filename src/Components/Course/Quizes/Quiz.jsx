@@ -80,7 +80,7 @@ const Quiz = () => {
     };
 
     return (
-        <div className="flex">
+        <div className=" flex min-h-[88vh] bg-gray-50">
             <CourseSidebar courseId={courseId} />
 
             <div className="flex-1 ml-64 md:ml-60 p-8 bg-gray-50 min-h-[88vh]">

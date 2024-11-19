@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import apiClient from "../../../apiClient";
 import { useCourse } from "../CourseContext";
 import CourseSidebar from "../CourseSidebar";
 import ModuleContent from "./ModuleContent";
-import apiClient from "../../../apiClient";
 
 const Modal = ({ message, onClose }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -154,10 +154,12 @@ const GetModules = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex min-h-[88vh] bg-gray-50">
       <CourseSidebar courseId={courseId} />
 
-      <div className="flex-1 ml-64 md:ml-60 lg:ml-72 p-4 bg-gray-50 min-h-[88vh]">
+      <div className={`flex-1 transition-all duration-300 ease-in-out ${
+          window.innerWidth < 768 ? "ml-16" : "ml-[15vw]"
+        } p-8 space-y-6`}>
         {error && <p className="text-red-500">{error}</p>}
 
         <div className="flex flex-col md:flex-row justify-between mb-8">

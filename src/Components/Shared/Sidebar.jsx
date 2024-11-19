@@ -38,7 +38,7 @@ const Sidebar = () => {
     <div
       className={`${
         isCollapsed ? "w-16" : "w-[15vw] max-w-[250px]"
-      } bg-[#333333] text-white h-screen p-4 transition-width duration-300 fixed flex flex-col justify-between`}
+      } bg-[#333333] text-white h-screen p-4 transition-width duration-300 fixed top-0 left-0`}
     >
       <div>
         {/* Toggle Button */}
