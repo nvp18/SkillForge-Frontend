@@ -6,38 +6,34 @@ import logo from '../../assets/logo.svg';
 import './Login.css'; // Ensure your custom styles (if any) are included
 
 const Login = () => {
-  const [userName, setuserName] = useState(''); 
+  const [userName, setuserName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await apiClient.post('/api/user/login', {
+        userName,
+        password,
+      });
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await apiClient.post('/api/user/login', {
-      userName, 
-      password,
-    });
+      const { Token, Role } = response.data;
 
-    console.log(response.data);
-    const { Token, Role } = response.data;
+      // Store token and role in localStorage
+      localStorage.setItem('token', Token);
+      localStorage.setItem('role', Role);
 
-    // Store token and role in localStorage
-    localStorage.setItem('token', Token);
-    localStorage.setItem('role', Role);
-
-    // Navigate based on role
-    if (Role === 'ADMIN' || Role === 'EMPLOYEE') {
-      navigate('/dashboard');
+      // Navigate based on role
+      if (Role === 'ADMIN' || Role === 'EMPLOYEE') {
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Login failed. Please check your credentials.');
     }
-  } catch (error) {
-    console.error(error);
-    setErrorMessage(error.response?.data?.message || 'Login failed. Please check your credentials.');
-  }
-};
-
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -46,43 +42,47 @@ const handleLogin = async (e) => {
           <img src={logo} alt="SkillForge Company Logo" className="mx-auto w-72 h-72" />
         </div>
 
-        {/* Updated Welcome Text */}
         <div className="text-center mb-6">
           <h2 className="text-xl font-semibold text-gray-700">
             Welcome to SkillForge, where your growth continues.
           </h2>
           <p className="text-gray-600 mt-2">
-            <span className="text-customYellow font-semibold">Sign in</span> to access your personalized dashboard and continue learning.
+            <span className="text-customYellow font-semibold">Sign in</span> to access your personalized dashboard
+            and continue learning.
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label className="block mb-1 text-gray-600">Username</label> 
+            <label htmlFor="username" className="block mb-1 text-gray-600">Username</label>
             <input
-              type="text" 
+              type="text"
+              id="username"
               value={userName}
-              onChange={(e) => setuserName(e.target.value)} 
+              onChange={(e) => setuserName(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+              placeholder="Enter your username"
             />
           </div>
 
           <div className="mb-4 relative">
-            <label className="block mb-1 text-gray-600">Password</label>
+            <label htmlFor="password" className="block mb-1 text-gray-600">Password</label>
             <div className="relative">
               <input
-                type={showPassword ? 'text' : 'password'} // Toggle between text and password
+                type={showPassword ? 'text' : 'password'}
+                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 pr-10" // Add padding for icon
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 pr-10"
+                placeholder="Enter your password"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} // Toggle show/hide
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                aria-label={showPassword ? 'Hide password visibility' : 'Show password visibility'}
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Eye icons */}
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
           </div>
