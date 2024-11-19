@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 
-
 const CreateCourse = () => {
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
@@ -22,34 +21,26 @@ const CreateCourse = () => {
       courseTags,
       daysToFinish: parseInt(daysToFinish, 10),
     };
-  
+
     const token = localStorage.getItem("token");
-  
+
     try {
-      // Axios automatically handles the Content-Type for JSON
       const response = await apiClient.post("/api/course/createCourse", courseData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      // Axios resolves 2xx status codes, so we check if data is present
+
       if (response.data) {
         setModalMessage("Course successfully created");
         setSuccessModalOpen(true);
         resetForm();
       }
     } catch (err) {
-      // Handle different error cases
-      if (err.response?.status === 500) {
-        setModalMessage("Course creation failed. Please check your input.");
-      } else {
-        setModalMessage("An error occurred. Please try again.");
-      }
+      setModalMessage(err.response?.data?.message || "An error occurred. Please try again.");
       setErrorModalOpen(true);
     }
   };
-  
 
   const resetForm = () => {
     setCourseName("");
@@ -72,9 +63,9 @@ const CreateCourse = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
           Create New Course
         </h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} data-testid="create-course-form">
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2 text-sm md:text-base" htmlFor="courseName">
+            <label htmlFor="courseName" data-testid="course-name-label">
               Course Name
             </label>
             <input
@@ -83,11 +74,11 @@ const CreateCourse = () => {
               value={courseName}
               onChange={(e) => setCourseName(e.target.value)}
               required
-              className="w-full px-4 py-2 border rounded-md text-gray-700 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="course-name-input"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2 text-sm md:text-base" htmlFor="courseDescription">
+            <label htmlFor="courseDescription" data-testid="course-description-label">
               Course Description
             </label>
             <textarea
@@ -95,12 +86,11 @@ const CreateCourse = () => {
               value={courseDescription}
               onChange={(e) => setCourseDescription(e.target.value)}
               required
-              className="w-full px-4 py-2 border rounded-md text-gray-700 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="3"
+              data-testid="course-description-input"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2 text-sm md:text-base" htmlFor="courseTags">
+            <label htmlFor="courseTags" data-testid="course-tags-label">
               Course Tags (comma-separated)
             </label>
             <input
@@ -109,11 +99,11 @@ const CreateCourse = () => {
               value={courseTags}
               onChange={(e) => setCourseTags(e.target.value)}
               required
-              className="w-full px-4 py-2 border rounded-md text-gray-700 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="course-tags-input"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2 text-sm md:text-base" htmlFor="daysToFinish">
+            <label htmlFor="daysToFinish" data-testid="days-to-finish-label">
               Days to Finish
             </label>
             <input
@@ -122,47 +112,24 @@ const CreateCourse = () => {
               value={daysToFinish}
               onChange={(e) => setDaysToFinish(e.target.value)}
               required
-              className="w-full px-4 py-2 border rounded-md text-gray-700 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="days-to-finish-input"
             />
           </div>
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Create Course
-            </button>
-          </div>
+          <button type="submit" data-testid="submit-button">Create Course</button>
         </form>
       </div>
 
-      {/* Success Modal */}
       {successModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm">
-            <h2 className="text-lg md:text-xl font-semibold text-center mb-4">{modalMessage}</h2>
-            <button
-              onClick={closeModals}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md w-full"
-            >
-              OK
-            </button>
-          </div>
+        <div data-testid="success-modal">
+          <h2>{modalMessage}</h2>
+          <button onClick={closeModals}>OK</button>
         </div>
       )}
 
-      {/* Error Modal */}
       {errorModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm">
-            <h2 className="text-lg md:text-xl font-semibold text-center mb-4">{modalMessage}</h2>
-            <button
-              onClick={closeModals}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md w-full"
-            >
-              OK
-            </button>
-          </div>
+        <div data-testid="error-modal">
+          <h2>{modalMessage}</h2>
+          <button onClick={closeModals}>OK</button>
         </div>
       )}
     </div>

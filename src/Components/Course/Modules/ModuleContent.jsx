@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import apiClient from "../../../apiClient";
 
+export const fetchPdfUrl = async (moduleId, token) => {
+  const response = await apiClient.get(`/api/course/getModuleContent/${moduleId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data.message;
+};
+
 const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
@@ -9,32 +16,22 @@ const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchPdfUrl = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-  
         const token = localStorage.getItem("token");
-  
-        const response = await apiClient.get(
-          `/api/course/getModuleContent/${moduleContents[currentIndex].moduleId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-  
-        setSelectedPdfUrl(response.data.message);
-      } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch PDF URL.");
+        const pdfUrl = await fetchPdfUrl(moduleContents[currentIndex].moduleId, token);
+        setSelectedPdfUrl(pdfUrl);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to fetch PDF URL.");
         setSelectedPdfUrl(null);
       } finally {
         setIsLoading(false);
       }
     };
-  
-    fetchPdfUrl();
+    fetchData();
   }, [currentIndex, moduleContents]);
-  
 
   const goToPrevModule = () => {
     if (currentIndex > 0) {
@@ -53,10 +50,7 @@ const ModuleContent = ({ moduleContents, initialIndex, closeViewer }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-5xl w-full h-[85vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800">{moduleContents[currentIndex]?.moduleName}</h2>
-          <button
-            onClick={closeViewer}
-            className="text-red-600 hover:text-red-800 focus:outline-none"
-          >
+          <button onClick={closeViewer} className="text-red-600 hover:text-red-800 focus:outline-none">
             <FaTimes size={24} />
           </button>
         </div>

@@ -122,7 +122,7 @@ const CourseSidebar = ({ courseId }) => {
   const resolvedCourseId = courseId || paramCourseId;
   const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const role = localStorage.getItem("role"); // Retrieve the role from localStorage
+  const role = localStorage.getItem("role");
 
   const toggleCourseSidebar = () => {
     setIsCollapsed(!isCollapsed);
@@ -143,17 +143,19 @@ const CourseSidebar = ({ courseId }) => {
       className={`${
         isCollapsed ? "w-16" : "w-[15vw] max-w-[250px]"
       } bg-white text-[#342056] min-h-[88vh] p-4 transition-width duration-300 fixed left-[15vw] shadow-lg flex flex-col justify-between`}
+      data-testid="sidebar"
     >
       <div>
-        {/* Toggle Button */}
         <div className="flex justify-end">
           <button
             onClick={toggleCourseSidebar}
             className="text-gray-500 focus:outline-none"
-          ></button>
+            data-testid="toggle-button"
+          >
+            Toggle
+          </button>
         </div>
 
-        {/* Menu Header */}
         <div className="flex items-center space-x-3 mb-6 px-2 py-4 bg-[#f5f5f5] rounded-lg hover:bg-slate-300">
           <FaBook size={24} className="text-[#a0595d]" />
           {!isCollapsed && (
@@ -161,13 +163,13 @@ const CourseSidebar = ({ courseId }) => {
           )}
         </div>
 
-        {/* Menu Items */}
         <nav>
           <ul className="space-y-4">
             <li>
               <Link
                 to={`/course/${resolvedCourseId}/home`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
+                data-testid="home-link"
               >
                 {!isCollapsed ? "Home" : <span title="Home">🏠</span>}
               </Link>
@@ -176,6 +178,7 @@ const CourseSidebar = ({ courseId }) => {
               <Link
                 to={`/course/${resolvedCourseId}/getModules`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
+                data-testid="modules-link"
               >
                 {!isCollapsed ? "Modules" : <span title="Modules">📘</span>}
               </Link>
@@ -184,34 +187,19 @@ const CourseSidebar = ({ courseId }) => {
               <Link
                 to={`/course/${resolvedCourseId}/discussions`}
                 className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
+                data-testid="discussions-link"
               >
                 {!isCollapsed ? "Discussions" : <span title="Discussions">💬</span>}
               </Link>
             </li>
-            <li>
-              <Link
-                to={`/course/${resolvedCourseId}/announcements`}
-                className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
-              >
-                {!isCollapsed ? "Announcements" : <span title="Announcements">📢</span>}
-              </Link>
-            </li>
-            <li>
-                  <Link
-                    to={`/course/${resolvedCourseId}/create-quiz`}
-                    className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
-                  >
-                    {!isCollapsed ? "Quizzes" : <span title="Create Quiz">📝</span>}
-                  </Link>
-                </li>
 
-            {/* Admin-only links */}
             {role === "ADMIN" && (
               <>
                 <li>
                   <Link
                     to={`/course/${resolvedCourseId}/edit`}
                     className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
+                    data-testid="edit-link"
                   >
                     {!isCollapsed ? "Edit Course" : <span title="Edit Course">✏️</span>}
                   </Link>
@@ -220,6 +208,7 @@ const CourseSidebar = ({ courseId }) => {
                   <Link
                     to={`/course/${resolvedCourseId}/delete`}
                     className="hover:bg-gray-200 p-2 rounded transition duration-300 block"
+                    data-testid="delete-link"
                   >
                     {!isCollapsed ? "Delete Course" : <span title="Delete Course">🗑️</span>}
                   </Link>

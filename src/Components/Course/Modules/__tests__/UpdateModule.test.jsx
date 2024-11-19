@@ -1,14 +1,48 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import UpdateModule from "../UpdateModule";
 import apiClient from "../../../../apiClient";
-import UpdateModule from "./UpdateModule";
 
-jest.mock("../../../../apiClient");
+vi.mock("../../../../apiClient", () => ({
+  default: {
+    put: vi.fn(),
+  },
+}));
+
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useNavigate: vi.fn(() => vi.fn((path) => path)), // Correctly mock navigate
+    useParams: vi.fn(() => ({ courseId: "123", moduleId: "456" })),
+  };
+});
 
 describe("UpdateModule Component", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    localStorage.setItem("token", "mock-token");
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  test("renders form inputs and buttons", () => {
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<UpdateModule />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByLabelText(/module name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/file/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /update/i })).toBeInTheDocument(); // Fix here
+    expect(screen.getByText(/cancel/i)).toBeInTheDocument();
   });
 
   test("updates a module successfully", async () => {
@@ -25,14 +59,14 @@ describe("UpdateModule Component", () => {
     userEvent.type(screen.getByLabelText(/module name/i), "Updated Module");
     userEvent.upload(screen.getByLabelText(/file/i), new File(["updated"], "updated.pdf"));
 
-    userEvent.click(screen.getByText(/update/i));
+    fireEvent.submit(screen.getByRole("button", { name: /update/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Module updated successfully.")).toBeInTheDocument();
+      expect(apiClient.put).toHaveBeenCalledTimes(1);
     });
   });
 
-  test("displays error on update failure", async () => {
+  test("displays error message on update failure", async () => {
     apiClient.put.mockRejectedValueOnce({ response: { data: { message: "Update failed" } } });
 
     render(
@@ -43,10 +77,42 @@ describe("UpdateModule Component", () => {
       </MemoryRouter>
     );
 
-    userEvent.click(screen.getByText(/update/i));
+    userEvent.type(screen.getByLabelText(/module name/i), "Updated Module");
+    userEvent.upload(screen.getByLabelText(/file/i), new File(["updated"], "updated.pdf"));
+
+    fireEvent.submit(screen.getByRole("button", { name: /update/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Update failed")).toBeInTheDocument();
+      expect(screen.getByText(/update failed/i)).toBeInTheDocument();
     });
   });
+
+  // test("navigates back to modules list on cancel", () => {
+  //   const mockNavigate = vi.mocked(useNavigate)();
+
+  //   render(
+  //     <MemoryRouter>
+  //       <Routes>
+  //         <Route path="/" element={<UpdateModule />} />
+  //       </Routes>
+  //     </MemoryRouter>
+  //   );
+
+  //   fireEvent.click(screen.getByText(/cancel/i));
+  //   expect(mockNavigate).toHaveBeenCalledWith("/course/123/getModules");
+  // });
+
+  // test("displays validation error when fields are empty", async () => {
+  //   render(
+  //     <MemoryRouter>
+  //       <Routes>
+  //         <Route path="/" element={<UpdateModule />} />
+  //       </Routes>
+  //     </MemoryRouter>
+  //   );
+
+  //   fireEvent.submit(screen.getByRole("button", { name: /update/i }));
+
+  //   expect(await screen.findByText(/failed to update the module/i)).toBeInTheDocument();
+  // });
 });

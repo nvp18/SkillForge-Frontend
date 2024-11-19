@@ -8,8 +8,14 @@ const CoursePage = () => {
   const { courseId } = useParams();
   const { courseDetails, setCourseDetails } = useCourse();
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
@@ -19,15 +25,14 @@ const CoursePage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setCourseDetails(response.data); // Axios directly returns data in response.data
+        setCourseDetails(response.data);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch course details.");
       }
     };
-  
+
     fetchCourseDetails();
   }, [courseId, setCourseDetails]);
-  
 
   if (error) return <p className="text-red-500">Error: {error}</p>;
   if (!courseDetails) return <p>Loading...</p>;
@@ -38,10 +43,9 @@ const CoursePage = () => {
     <div className="flex min-h-[88vh] bg-gray-50">
       <CourseSidebar courseId={courseId} />
 
-      {/* Main content area */}
       <div
         className={`flex-1 transition-all duration-300 ease-in-out ${
-          window.innerWidth < 768 ? "ml-16" : "ml-[15vw]"
+          isMobile ? "ml-16" : "ml-[15vw]"
         } p-8 space-y-6`}
       >
         <h2 className="text-3xl font-bold text-[#342056]">{courseName}</h2>

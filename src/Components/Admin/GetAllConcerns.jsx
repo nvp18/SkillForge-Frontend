@@ -15,49 +15,49 @@ const GetAllConcerns = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState(""); // To track user role
 
-  useEffect(() => {
-    const fetchConcerns = async () => {
-      const token = localStorage.getItem("token");
-      const userRole = localStorage.getItem("role"); // Assuming role is stored in localStorage
-      setRole(userRole);
-  
-      const apiUrl =
-        userRole === "ADMIN"
-          ? "/api/admin/getAllConcerns"
-          : "/api/employee/getConcerns";
-  
-      try {
-        const response = await apiClient.get(apiUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        // Axios automatically handles JSON parsing
-        setConcerns(response.data);
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch concerns.");
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchConcerns();
-  }, []);
-  
-
-  const handleRaiseConcern = async () => {
+  const fetchConcerns = async () => {
     const token = localStorage.getItem("token");
-  
+    const userRole = localStorage.getItem("role");
+    setRole(userRole);
+
+    const apiUrl =
+      userRole === "ADMIN"
+        ? "/api/admin/getAllConcerns"
+        : "/api/employee/getConcerns";
+
     try {
-      // Axios `post` usage: data goes as the second argument, headers as the third
-      const response = await apiClient.post("/api/employee/raiseConcern", concernData, {
+      const response = await apiClient.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      // Axios resolves automatically for 2xx responses
+
+      setConcerns(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to fetch concerns.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchConcerns();
+  }, []);
+
+  const handleRaiseConcern = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await apiClient.post(
+        "/api/employee/raiseConcern",
+        concernData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       setModalMessage("Concern raised successfully.");
       setConcernData({ subject: "", description: "" });
       setShowRaiseConcernModal(false);
@@ -66,11 +66,9 @@ const GetAllConcerns = () => {
         ...prev,
       ]);
     } catch (err) {
-      // Handle Axios error
       setModalMessage(err.response?.data?.message || "Failed to raise concern.");
     }
   };
-  
 
   const closeModal = () => {
     setShowRaiseConcernModal(false);
@@ -81,7 +79,7 @@ const GetAllConcerns = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="p-4 sm:p-8 min-h-[80vh] bg-gray-50 relative">
+    <div data-testid="concerns-page" className="p-4 sm:p-8 min-h-[80vh] bg-gray-50 relative">
       <header className="mb-4 sm:mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">Concerns</h1>
@@ -89,6 +87,7 @@ const GetAllConcerns = () => {
         </div>
         {role === "EMPLOYEE" && (
           <button
+            data-testid="raise-concern-button"
             onClick={() => setShowRaiseConcernModal(true)}
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
@@ -101,8 +100,9 @@ const GetAllConcerns = () => {
         {concerns.map((concern) => (
           <div
             key={concern.id}
+            data-testid={`concern-${concern.id}`}
             className="bg-white p-4 sm:p-5 rounded-lg shadow-md flex justify-between items-center cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/${role.toLowerCase()}/concerns/${concern.id}`)}
+            onClick={() => navigate(`/${(role || "").toLowerCase()}/concerns/${concern.id}`)}
           >
             <h2 className="text-base sm:text-lg font-bold text-gray-800">{concern.subject}</h2>
             <span
@@ -118,7 +118,6 @@ const GetAllConcerns = () => {
         ))}
       </div>
 
-      {/* Raise Concern Modal */}
       {showRaiseConcernModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -163,7 +162,6 @@ const GetAllConcerns = () => {
         </div>
       )}
 
-      {/* Success/Error Modal */}
       {modalMessage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-md">

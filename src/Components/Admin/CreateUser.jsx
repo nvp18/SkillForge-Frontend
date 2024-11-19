@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import apiClient from "../../apiClient";
 
-
 const CreateUser = () => {
   const [userName, setUserName] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -19,32 +18,28 @@ const CreateUser = () => {
       lastName,
       email,
     };
-  
+
     const token = localStorage.getItem("token");
-  
+
     try {
-      // Pass the data as the second argument, headers as the third
       const response = await apiClient.post("/api/user/createUser", userData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      // Axios resolves if status is 2xx, so handle success directly
-      setModalMessage("User successfully added.");
-      setSuccessModalOpen(true);
-      resetForm();
-    } catch (err) {
-      // Axios throws errors for non-2xx responses, handle based on status
-      if (err.response?.status === 500) {
-        setModalMessage("Username already exists.");
-      } else {
-        setModalMessage("An error occurred. Please try again.");
+
+      if (response.data) {
+        setModalMessage("User successfully added.");
+        setSuccessModalOpen(true);
+        resetForm();
       }
+    } catch (err) {
+      setModalMessage(
+        err.response?.data?.message || "An error occurred. Please try again."
+      );
       setErrorModalOpen(true);
     }
   };
-  
 
   const resetForm = () => {
     setUserName("");
@@ -64,7 +59,7 @@ const CreateUser = () => {
         <h1 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-6">
           Create New User
         </h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} data-testid="create-user-form">
           <div className="mb-4">
             <label
               className="block text-gray-700 font-medium mb-2 text-sm md:text-base"
@@ -79,6 +74,7 @@ const CreateUser = () => {
               onChange={(e) => setUserName(e.target.value)}
               required
               className="w-full px-3 py-2 md:px-4 md:py-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="username-input"
             />
           </div>
           <div className="mb-4">
@@ -95,6 +91,7 @@ const CreateUser = () => {
               onChange={(e) => setFirstName(e.target.value)}
               required
               className="w-full px-3 py-2 md:px-4 md:py-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="firstname-input"
             />
           </div>
           <div className="mb-4">
@@ -111,6 +108,7 @@ const CreateUser = () => {
               onChange={(e) => setLastName(e.target.value)}
               required
               className="w-full px-3 py-2 md:px-4 md:py-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="lastname-input"
             />
           </div>
           <div className="mb-4">
@@ -127,12 +125,14 @@ const CreateUser = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-3 py-2 md:px-4 md:py-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="email-input"
             />
           </div>
           <div className="flex justify-center">
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 md:py-3 md:px-8 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="submit-button"
             >
               Create User
             </button>
@@ -142,7 +142,10 @@ const CreateUser = () => {
 
       {/* Success Modal */}
       {successModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          data-testid="success-modal"
+        >
           <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm">
             <h2 className="text-base md:text-lg font-semibold text-center mb-4">
               {modalMessage}
@@ -159,7 +162,10 @@ const CreateUser = () => {
 
       {/* Error Modal */}
       {errorModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          data-testid="error-modal"
+        >
           <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm">
             <h2 className="text-base md:text-lg font-semibold text-center mb-4">
               {modalMessage}

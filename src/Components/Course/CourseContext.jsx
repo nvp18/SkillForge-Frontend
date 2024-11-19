@@ -31,6 +31,10 @@ export const CourseProvider = ({ children }) => {
 
       try {
         const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Token is missing.");
+        }
+
         const response = await apiClient.get(`/api/course/getCourseDetails/${courseId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,7 +43,9 @@ export const CourseProvider = ({ children }) => {
         setCourseDetails(response.data);
         setError(null); // Clear any previous errors
       } catch (err) {
-        setError(err.response?.data?.message || "An error occurred while fetching course details.");
+        const errorMessage =
+          err.response?.data?.message || err.message || "An error occurred while fetching course details.";
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
