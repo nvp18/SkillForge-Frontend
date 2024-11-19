@@ -3,7 +3,7 @@ import { FaClock, FaFolderOpen, FaUserEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apiClient";
 import b3 from "../../assets/b3.jpg";
-import Sidebar from "../../Components/Shared/Sidebar"; // Ensure Sidebar is imported
+import Sidebar from "../../Components/Shared/Sidebar";
 
 const Dashboard = () => {
   const [courses, setCourses] = useState([]);

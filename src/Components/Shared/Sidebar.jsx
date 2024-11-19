@@ -38,7 +38,7 @@ const Sidebar = () => {
     <div
       className={`${
         isCollapsed ? "w-16" : "w-[15vw] max-w-[250px]"
-      } bg-[#333333] text-white h-screen p-4 transition-width duration-300 fixed top-0 left-0`}
+      } bg-[#333333] text-white h-screen p-4 transition-width duration-300 fixed top-0 left-0 flex flex-col justify-between`}
     >
       <div>
         {/* Toggle Button */}
@@ -122,7 +122,7 @@ const Sidebar = () => {
       </div>
 
       {/* Logout Button */}
-      <div>
+      <div className="mt-auto">
         <button
           onClick={handleLogout}
           className="flex items-center space-x-2 hover:bg-[#D9534F] p-2 rounded w-full text-left transition duration-300"
