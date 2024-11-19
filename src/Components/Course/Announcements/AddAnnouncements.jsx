@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CourseSidebar from "../CourseSidebar";
 import apiClient from "../../../apiClient";
+import CourseSidebar from "../CourseSidebar";
 
 const AddAnnouncement = () => {
   const { courseId } = useParams();
@@ -12,26 +12,33 @@ const AddAnnouncement = () => {
   const [showModal, setShowModal] = useState(false);
 
   const handlePostAnnouncement = async () => {
+    if (!title || !description) {
+      setError("Title and description cannot be empty.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
-  
+
     try {
-      await apiClient.post(`/api/admin/postAnnouncement/${courseId}`, 
-        { title, description }, 
+      await apiClient.post(
+        `/api/admin/postAnnouncement/${courseId}`,
+        { title, description },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-  
-      // Show success modal on success
+
       setShowModal(true);
+      setError(null); // Clear any previous errors on success
     } catch (error) {
-      // Handle error and set error message
-      setError(error.response?.data?.message || "An error occurred while posting the announcement. Please try again.");
+      setError(
+        error.response?.data?.message ||
+          "An error occurred while posting the announcement. Please try again."
+      );
     }
   };
-  
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -89,7 +96,6 @@ const AddAnnouncement = () => {
         </div>
       </div>
 
-      {/* Success Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">

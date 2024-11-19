@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import apiClient from '../../../apiClient';
 import CourseSidebar from '../../Course/CourseSidebar';
 import AddQuiz from './AddQuiz';
-import apiClient from '../../../apiClient';
 
 const Quiz = () => {
     const navigate = useNavigate();
