@@ -1,0 +1,39 @@
+name: Deploy to EC2 on Push to Main
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH for EC2
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > test1.pem
+          chmod 600 test1.pem
+          mkdir -p ~/.ssh  # Ensure .ssh directory exists
+          ssh-keyscan -H 52.0.44.131 >> ~/.ssh/known_hosts  # Add EC2 to known_hosts
+          eval "$(ssh-agent -s)"
+          ssh-add test1.pem
+
+      - name: Deploy SkillForge Frontend to EC2
+        run: |
+          ssh -i test1.pem ubuntu@52.0.44.131 << 'EOF'
+            # Clone SkillForge-Frontend if it doesn't exist
+            if [ ! -d "/home/ubuntu/opt/SkillForge-Frontend" ]; then
+              git clone https://github.com/nvp18/SkillForge-Frontend.git /home/ubuntu/opt/SkillForge-Frontend
+            fi
+            cd /home/ubuntu/opt/SkillForge-Frontend
+            git pull origin main
+
+            # Install dependencies and start the Frontend service
+            npm install
+            npm run stop || echo "Service not running"
+            npm run dev
+          EOF
