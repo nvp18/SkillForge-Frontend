@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../apiClient';
 
 const Modal = ({ message, onClose }) => (
@@ -26,8 +26,9 @@ const AttemptQuiz = () => {
     const [answers, setAnswers] = useState([]);
     const [quizCompleted, setQuizCompleted] = useState(false);
     const [error, setError] = useState(null);
-    const [submitStatus, setSubmitStatus] = useState(''); // Stores API result message
-    const [showModal, setShowModal] = useState(false); // Modal visibility control
+    const [submitStatus, setSubmitStatus] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [role, setRole] = useState(''); // State to store user role
 
     const token = localStorage.getItem('token');
 
@@ -43,7 +44,13 @@ const AttemptQuiz = () => {
             }
         };
 
+        const fetchUserRole = () => {
+            const userRole = localStorage.getItem('role');
+            setRole(userRole);
+        };
+
         fetchQuizQuestions();
+        fetchUserRole();
     }, [quizId]);
 
     const handleAnswer = (questionId, answer) => {
@@ -82,7 +89,7 @@ const AttemptQuiz = () => {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        navigate(`/course/${courseId}/create-quiz`); // Navigate back to quizzes list
+        navigate(`/course/${courseId}/create-quiz`);
     };
 
     return (
@@ -123,12 +130,6 @@ const AttemptQuiz = () => {
                             >
                                 Finish
                             </button>
-                            <button
-                                onClick={() => navigate(`/course/${courseId}/quizzes`)}
-                                className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                            >
-                                Back to Quizzes
-                            </button>
                         </div>
                     ) : (
                         <div className="mt-8">
@@ -145,9 +146,15 @@ const AttemptQuiz = () => {
                                     );
                                 })}
                             </ul>
+
                             <button
                                 onClick={handleSubmit}
-                                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                className={`mt-4 px-4 py-2 rounded ${
+                                    role === 'ADMIN'
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                }`}
+                                disabled={role === 'ADMIN'}
                             >
                                 Submit Quiz
                             </button>
@@ -167,7 +174,7 @@ const AttemptQuiz = () => {
             {showModal && (
                 <Modal
                     message={submitStatus}
-                    onClose={handleCloseModal} // Redirects after modal closes
+                    onClose={handleCloseModal}
                 />
             )}
         </div>
