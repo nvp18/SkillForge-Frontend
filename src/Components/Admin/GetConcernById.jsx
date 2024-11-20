@@ -16,7 +16,7 @@ const GetConcernById = () => {
 
   const fetchConcern = async () => {
     const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("role"); // Assuming role is stored in localStorage
+    const userRole = localStorage.getItem("role");
     setRole(userRole);
   
     const apiUrl =
@@ -31,15 +31,12 @@ const GetConcernById = () => {
         },
       });
   
-      // Access the data directly from the response
       const specificConcern = response.data.find((c) => c.id === concernId);
       setConcern(specificConcern);
     } catch (err) {
-      // Handle error, fallback to generic message if no server message is present
       setError(err.response?.data?.message || "Failed to fetch concern.");
     }
   };
-  
 
   useEffect(() => {
     fetchConcern();
@@ -53,29 +50,25 @@ const GetConcernById = () => {
         : `/api/employee/replyToConcern/${concernId}`;
   
     try {
-      // Axios handles headers and JSON automatically
       await apiClient.post(replyApiUrl, { reply: replyText }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      // If the request is successful, perform the following
+
       setModalMessage("Reply sent successfully.");
       setShowModal(true);
       setReplyText("");
       setShowReplyBox(false);
     } catch (err) {
-      // Handle error
       setModalMessage(err.response?.data?.message || "An error occurred while sending the reply.");
       setShowModal(true);
     }
   };
-  
 
   const handleCloseModal = () => {
     setShowModal(false);
-    fetchConcern(); // Refresh the concern data to include the new reply
+    fetchConcern();
   };
 
   if (error) return <p className="text-red-500">{error}</p>;
@@ -89,7 +82,10 @@ const GetConcernById = () => {
 
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
         <h2 className="text-xl sm:text-2xl font-bold mb-4">{concern.subject}</h2>
-        <p className="text-sm sm:text-base text-gray-700 mb-4">{concern.description}</p>
+        <p className="text-sm sm:text-base text-gray-700 mb-2">{concern.description}</p>
+        <p className="text-xs sm:text-sm text-gray-500">
+          <strong>Raised by:</strong> {concern.createdBy}
+        </p>
         <p className="text-xs sm:text-sm text-gray-500">
           <strong>Created at:</strong> {new Date(concern.createdat).toLocaleString()}
         </p>
@@ -131,6 +127,9 @@ const GetConcernById = () => {
                 <p className="text-sm sm:text-base">{reply.reply}</p>
                 <p className="text-xs sm:text-sm text-gray-500">
                   <strong>Replied at:</strong> {new Date(reply.repliedat).toLocaleString()}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  <strong>Replied by:</strong> {reply.repliedBy}
                 </p>
               </div>
             ))
