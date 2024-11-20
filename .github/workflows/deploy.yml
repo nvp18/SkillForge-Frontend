@@ -32,8 +32,12 @@ jobs:
             cd /home/ubuntu/opt/SkillForge-Frontend
             git pull origin main
 
-            # Install dependencies and start the Frontend service
+            # Install dependencies
             npm install
-            npm run stop || echo "Service not running"
-            npm run dev
+
+            # Stop any previously running instances
+            pkill -f "npm run dev" || echo "No running instances to stop"
+
+            # Start the new Frontend service in the background
+            nohup npm run dev > frontend.log 2>&1 &
           EOF
