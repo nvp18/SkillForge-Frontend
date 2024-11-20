@@ -17,7 +17,6 @@ const AllUsers = () => {
           },
         });
 
-        // Axios automatically parses JSON and throws on non-2xx status codes
         setUsers(response.data); // Access the response data directly
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch users.");
